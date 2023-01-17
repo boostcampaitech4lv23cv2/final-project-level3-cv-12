@@ -13,6 +13,7 @@ def get_config():
     parser.add_argument('-d', '--data-root-path', default='/opt/ml/input/datasets', help='input data root path')
     parser.add_argument('-o', '--output-path', default='/opt/ml/input/split_datasets', help='output dir path')
     parser.add_argument('-s', '--seed', default=21, type=int, help='random seed')
+    parser.add_argument('-m', '--mode', default='copy', type=int, help='select mode "copy" or "move"')
     config = parser.parse_args()
     
     return config
@@ -59,10 +60,12 @@ def split_dataset(config):
                     npzOrHuman_name = npzOrHuman_path.split('/')[-1]
                     pngOrCloth_name = pngOrCloth_path.split('/')[-1]
                     
-                    shutil.copy2(npzOrHuman_path, os.path.join(config.output_path, categorie, sub_dir, npzOrHuman_name))
-                    shutil.copy2(pngOrCloth_path, os.path.join(config.output_path, categorie, sub_dir, pngOrCloth_name))
-                    # shutil.move(npzOrHuman_path, os.path.join(config.output_path, categorie, sub_dir, npzOrHuman_name))
-                    # shutil.move(pngOrCloth_path, os.path.join(config.output_path, categorie, sub_dir, pngOrCloth_name))
+                    if config.mode == 'copy':
+                        shutil.copy2(npzOrHuman_path, os.path.join(config.output_path, categorie, sub_dir, npzOrHuman_name))
+                        shutil.copy2(pngOrCloth_path, os.path.join(config.output_path, categorie, sub_dir, pngOrCloth_name))
+                    elif config.mode == 'move':
+                        shutil.move(npzOrHuman_path, os.path.join(config.output_path, categorie, sub_dir, npzOrHuman_name))
+                        shutil.move(pngOrCloth_path, os.path.join(config.output_path, categorie, sub_dir, pngOrCloth_name))
 
                     if sub_dir == 'images':
                         train_pairs_path = os.path.join(config.output_path, categorie, train_pairs_name)
@@ -75,8 +78,11 @@ def split_dataset(config):
             else:
                 for file_path in tqdm(file_paths):
                     file_name = file_path.split('/')[-1]
-                    shutil.copy2(file_path, os.path.join(config.output_path, categorie, sub_dir, file_name))
-                    # shutil.move(file_path, os.path.join(config.output_path, categorie, sub_dir, file_name))
+                    
+                    if config.mode == 'copy':
+                        shutil.copy2(file_path, os.path.join(config.output_path, categorie, sub_dir, file_name))
+                    elif config.mode == 'move':
+                        shutil.move(file_path, os.path.join(config.output_path, categorie, sub_dir, file_name))
     
     ## make test_pairs.txt
     test_cloth_paths = []
