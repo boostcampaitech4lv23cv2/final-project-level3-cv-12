@@ -50,7 +50,12 @@ def split_dataset(config):
             file_paths = sorted(glob.glob(os.path.join(config.data_root_path, categorie, sub_dir, '*')))
 
             if len(file_paths) > config.split_num:
-                file_paths, test_file_paths = file_paths[:config.split_num], file_paths[config.split_num:]
+                split_num = config.split_num
+                
+                if sub_dir == 'dense' or sub_dir == 'images':
+                    split_num = config.split_num*2
+                    
+                file_paths, test_file_paths = file_paths[:split_num], file_paths[split_num:]
             
             if sub_dir == 'dense' or sub_dir == 'images':
                 for i in tqdm(range(0, len(file_paths), 2)):
