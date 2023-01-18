@@ -13,7 +13,7 @@ def get_config():
     parser.add_argument('-d', '--data-root-path', default='/opt/ml/input/datasets', help='input data root path')
     parser.add_argument('-o', '--output-path', default='/opt/ml/input/split_datasets', help='output dir path')
     parser.add_argument('-s', '--seed', default=21, type=int, help='random seed')
-    parser.add_argument('-m', '--mode', default='copy', type=int, help='select mode "copy" or "move"')
+    parser.add_argument('-m', '--mode', default='copy', help='select mode "copy" or "move"')
     config = parser.parse_args()
     
     return config
