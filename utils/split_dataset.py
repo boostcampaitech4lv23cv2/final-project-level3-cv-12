@@ -34,10 +34,10 @@ def split_dataset(config):
     ## train_pairs.txt
     train_pairs_name = 'train_pairs.txt'
     ## test_pairs_name
-    test_pairs_name = 'test_pairs.txt'
+    test_pairs_name = 'test_pairs_paired.txt'
     test_file_paths = []
     ## test_unpairs_name
-    test_unpairs_name = 'test_unpairs.txt'
+    test_unpairs_name = 'test_pairs_unpaired.txt'
     
     ## make output dirs
     for categorie in categories:
