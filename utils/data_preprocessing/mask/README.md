@@ -1,6 +1,6 @@
 ### 1. carvekit 설치
 ```
-$ pip install carvekit --extra-index-url https://download.pytorch.org/whl/cu113
+pip install carvekit --extra-index-url https://download.pytorch.org/whl/cu113
 ```
 명령어: `$ carvekit -i {input_path} -o {output_path}`
 
@@ -10,7 +10,7 @@ $ pip install carvekit --extra-index-url https://download.pytorch.org/whl/cu113
 1) `get_mask.sh`에서 `PATH_MAIN` 수정한다. `images` 폴더가 있는 폴더로 설정한다.
 2) `get_mask.sh` 실행 (파일 안에 있는 명령어를 직접 수행해도 된다.)
 ```
-$ sh get_mask.sh
+sh get_mask.sh
 ```
 
 
