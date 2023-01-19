@@ -57,21 +57,20 @@ def select_test_dataset(config):
             test_pair_paths = f.readlines()
             random.shuffle(test_pair_paths)
             test_pair_paths = test_pair_paths[:config.select_num]
+            
+            with open(f'{pair_out_dir_path}/{categorie}/{pair_name}', 'w') as file:
+                file.writelines(test_pair_paths)
         
         with open(unpair_path, 'r') as f:
             test_unpair_paths = f.readlines()
             random.shuffle(test_unpair_paths)
             test_unpair_paths = test_unpair_paths[:config.select_num]
+            
+            with open(f'{unpair_out_dir_path}/{categorie}/{unpair_name}', 'w') as file:
+                file.writelines(test_unpair_paths)
         
         ## pairs phase
         for test_pair_path in tqdm(test_pair_paths):
-            if os.path.exists(f'{pair_out_dir_path}/{pair_name}'):
-                with open(f'{pair_out_dir_path}/{pair_name}', 'a') as file:
-                    file.write(test_pair_path)
-            else:
-                with open(f'{pair_out_dir_path}/{pair_name}', 'w') as file:
-                    file.write(test_pair_path)
-            
             file_id = test_pair_path.split('_')[0]
 
             for sub_dir in sub_dirs:
@@ -86,13 +85,6 @@ def select_test_dataset(config):
                             
         ## unpairs phase
         for test_unpair_path in tqdm(test_unpair_paths):
-            if os.path.exists(f'{unpair_out_dir_path}/{pair_name}'):
-                with open(f'{unpair_out_dir_path}/{unpair_name}', 'a') as file:
-                    file.write(test_unpair_path)
-            else:
-                with open(f'{unpair_out_dir_path}/{unpair_name}', 'w') as file:
-                    file.write(test_unpair_path)
-            
             test_unpair_path = test_unpair_path.rstrip('\n').split('\t')
             human_id, cloth_id = test_unpair_path[0].split('_')[0], test_unpair_path[1].split('_')[0]
 
