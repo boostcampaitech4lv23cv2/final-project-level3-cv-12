@@ -40,7 +40,7 @@ def get_args():
     parser = argparse.ArgumentParser()
 
     parser.add_argument('--data_path', type=str, default='../data/dress_code', help='dataset dir')
-    parser.add_argument('--part', nargs='+', default='upper_body', help='어느 부위를 agnostic 이미지로 만들것인지 작성')
+    parser.add_argument('--part', nargs='+', default=['upper_body'], help='어느 부위를 agnostic 이미지로 만들것인지 작성')
 
     parser.add_argument('--radius', type=int, default=10)
     parser.add_argument('--height', type=int, default=1024)
@@ -172,8 +172,8 @@ def get_agnostic(args, imgs, im_parse, pose_label, part):
         else:
             arms_draw.line(np.concatenate((wrist_left, elbow_left, shoulder_left, shoulder_right, elbow_right, wrist_right)).astype(np.uint16).tolist(),'white', 30, 'curve')
 
-        if args.height > 512:
-            im_arms = cv2.dilate(np.float32(im_arms), np.ones((10, 10), np.uint16), iterations=5)
+        # if args.height > 512:
+        #     im_arms = cv2.dilate(np.float32(im_arms), np.ones((10, 10), np.uint16), iterations=5)
         # elif args.height > 256:
         #     im_arms = cv2.dilate(np.float32(im_arms), np.ones((5, 5), np.uint16), iterations=5)
         hands = np.logical_and(np.logical_not(im_arms), arms)
@@ -193,10 +193,10 @@ def get_agnostic(args, imgs, im_parse, pose_label, part):
     parser_mask_fixed = np.logical_or(parser_mask_fixed, np.array(parse_head_2, dtype=np.uint16))
     parse_mask += np.logical_or(parse_mask, np.logical_and(np.array(parse_head, dtype=np.uint16), np.logical_not(np.array(parse_head_2, dtype=np.uint16))))
 
-    if args.height > 512:
-        parse_mask = cv2.dilate(parse_mask, np.ones((20, 20), np.uint16), iterations=5)
-    else:
-        parse_mask = cv2.dilate(parse_mask, np.ones((5, 5), np.uint16), iterations=5)
+    # if args.height > 512:
+    #     parse_mask = cv2.dilate(parse_mask, np.ones((20, 20), np.uint16), iterations=5)
+    # else:
+    parse_mask = cv2.dilate(parse_mask, np.ones((5, 5), np.uint16), iterations=5)
 
     parse_mask = np.logical_and(parser_mask_changeable, np.logical_not(parse_mask))
     parse_mask_total = np.logical_or(parse_mask, parser_mask_fixed)
@@ -215,11 +215,9 @@ if __name__ == "__main__":
     args = get_args()
 
     for p in args.part:
-        if not osp.exists(osp.join(args.data_path, p, 'agnostic')):
-            os.makedirs(osp.join(args.data_path, p, 'agnostic'))
+        os.makedirs(os.path.join(args.data_path, p, 'agnostic'), exist_ok=True)
         if args.add_parse_agnostic:
-            if not osp.exists(osp.join(args.data_path, p, 'parse_agnostic')):
-                os.makedirs(osp.join(args.data_path, p, 'parse_agnostic'))
+            os.makedirs(os.path.join(args.data_path, p, 'parse_agnostic'), exist_ok=True)
 
         for im_name in tqdm(os.listdir(osp.join(args.data_path, p, 'images'))):
             if '_1.jpg' in im_name:
