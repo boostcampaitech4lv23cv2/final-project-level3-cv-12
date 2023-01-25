@@ -11,6 +11,8 @@
 *.pt
 *.checkpoint
 *.wandb
+wandb/
+*.out
 
 ### Python ###
 # Byte-compiled / optimized / DLL files

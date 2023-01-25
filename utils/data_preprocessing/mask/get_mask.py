@@ -10,7 +10,7 @@ def get_args():
     parser.add_argument('--PATH_IN', type=str, default='upper_body/temp_image_cloth_rmbkg', help="input dir")
     parser.add_argument('--PATH_OUT', type=str, default='upper_body/cloth_mask', help="output dir")
     parser.add_argument('--PATH_ID', type=str, default='upper_body/images', help="dir to get image ids")
-    parser.add_argument('--THRESHOLD_VALUE', type=int, default=230, help="Threshold pixel value")
+    parser.add_argument('--THRESHOLD_PIXVAL', type=int, default=230, help="Threshold pixel value")
     
     args = parser.parse_args()
     return args
@@ -30,7 +30,7 @@ def get_mask(args):
         crop_pil = Image.open(osp.join(args.PATH_IN, i + '_1.png'))     # size 768x1024
         mask = np.transpose(np.array(crop_pil), (2, 0, 1))[3]           # (W H C) -> (C W H)
 
-        mask0 = mask < args.THRESHOLD_VALUE
+        mask0 = mask < args.THRESHOLD_PIXVAL
         mask[mask0] = 0
         mask[np.logical_not(mask0)] = 255
 
