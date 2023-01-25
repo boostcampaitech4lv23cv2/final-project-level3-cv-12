@@ -8,6 +8,6 @@
 
 ## Checkpoint
 
-[DAFlow_256_192_checkpoint](https://www.dropbox.com/s/lc90lac0ha135op/038_model_all_256_part2.pt?dl=0)
+[DAFlow_256_192_checkpoint](https://www.dropbox.com/s/lc90lac0ha135op/038_model_all_256_part2.pt)
 
-[DAFlow_512_384_checkpoint](https://www.dropbox.com/s/kg9e0m6sr2j3fp0/003_allbody_512_upscale_low_lr.pt?dl=0)
+[DAFlow_512_384_checkpoint](https://www.dropbox.com/s/kg9e0m6sr2j3fp0/003_allbody_512_upscale_low_lr.pt)
