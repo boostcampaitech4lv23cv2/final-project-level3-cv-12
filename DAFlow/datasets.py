@@ -11,6 +11,7 @@ from torch.nn import functional as F
 import pandas as pd
 import h5py
 import numpy as np
+from copy import deepcopy
 
 
 class VITONDataset(data.Dataset):
@@ -577,6 +578,9 @@ class DressCodeDataset(data.Dataset):
         img = Image.open(osp.join(data_path, 'images', img_name))
         img = transforms.Resize(self.load_width, interpolation=2)(img)
 
+        img_original = deepcopy(img)
+        img_original = transforms.ToTensor()(img_original)
+
         # load person agnostics
         img_agnostic = Image.open(osp.join(data_path, 'agnostic', img_name)).convert('RGB')
         img_agnostic = transforms.Resize(self.load_width, interpolation=2)(img_agnostic)
@@ -604,6 +608,7 @@ class DressCodeDataset(data.Dataset):
             'img_agnostic': img_agnostic,
             'pose': pose_rgb,
             'cloth': c,
+            'img_ori': img_original,
             }
         return result
 
