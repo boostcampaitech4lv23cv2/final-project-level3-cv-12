@@ -45,10 +45,11 @@ def test(opt, net):
         for i, inputs in enumerate(tqdm.tqdm(test_loader)):
             img_names = inputs['img_name']
             cloth_names = inputs['c_name']
-            img = inputs['img'].cuda()
+            img = inputs['img'].cuda()  # normalize image
             img_agnostic = inputs['img_agnostic'].cuda() # Masked model image
             pose = inputs['pose'].cuda()
             cloth_img = inputs['cloth'].cuda()
+            img_ori = inputs['img_ori'].cuda()  # not normalize image
 
             img =  F.interpolate(img, size=(opt.load_height, opt.load_width), mode='bilinear')
             cloth_img = F.interpolate(cloth_img, size=(opt.load_height, opt.load_width), mode='bilinear')
@@ -59,11 +60,11 @@ def test(opt, net):
             tryon_result = net(ref_input, cloth_img, img_agnostic).detach()
 
             for j in range(tryon_result.shape[0]):
-                save_image(tryon_result[j:j+1], os.path.join(opt.save_dir, opt.name, "vis_viton_out", img_names[j]), nrow=1, normalize=True, range=(-1,1))
+                save_image(tryon_result[j:j+1], os.path.join(opt.save_dir, opt.name, "vis_viton_out", img_names[j]), nrow=1, normalize=False, range=(-1,1))
 
             if opt.add_compare:
-                tryon_result = torch.cat([cloth_img, img_agnostic, tryon_result],2)
-                save_image(tryon_result, os.path.join(opt.save_dir, opt.name, "compare_out", img_names[0]), nrow=10, normalize=True, range=(-1,1))
+                tryon_result = torch.cat([img_ori, img, cloth_img, img_agnostic, tryon_result], 2)
+                save_image(tryon_result, os.path.join(opt.save_dir, opt.name, "compare_out", img_names[0]), nrow=10, normalize=False, range=(-1,1))
 
 
 def main():
