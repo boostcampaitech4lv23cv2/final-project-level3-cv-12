@@ -8,6 +8,8 @@ from torchvision import transforms
 from PIL import Image
 import io
 
+from openpose.model import bodypose_model
+
 def apply_offset(offset):
     sizes = list(offset.size()[2:])
     grid_list = torch.meshgrid([torch.arange(size, device=offset.device) for size in sizes])
@@ -313,11 +315,10 @@ class SDAFNet_Tryon(nn.Module):
         result = self.dafnet(source_image, ref_image, source_feats, reference_feats,use_light_en_de=use_light_en_de,return_all=return_all,warp_feature=warp_feature)
         return result
     
-def get_model(model_path: str = "/opt/ml/input/038_model_all_256_part2.pt"):
+def get_model(model_path: str = "/opt/ml/input/038_model_all_256_part2.pt", ):
     """Model을 가져옵니다"""
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model = SDAFNet_Tryon(ref_in_channel=6).to(device)
-
     checkpoint = torch.load(model_path, map_location=device)
     model.load_state_dict(checkpoint['state_dict'])
     model.eval()
@@ -339,18 +340,18 @@ def get_avatar(img_path: str = "./assets/daflow"):
     from os import path as osp
 
     # img = Image.open(osp.join(img_path, 'image.jpg'))
-    img = Image.open('/opt/ml/input/dresses/images/020714_0.jpg')
+    img = Image.open('/opt/ml/input/upper_body/images/000000_0.jpg')
     img = transforms.Resize(192, interpolation=2)(img)
     img = transforms.ToTensor()(img)
 
     # img_agnostic = Image.open(osp.join(img_path, 'agnostic.jpg')).convert('RGB')
-    img_agnostic = Image.open('/opt/ml/input/dresses/agnostic/020714_0.jpg').convert('RGB')
+    img_agnostic = Image.open('/opt/ml/input/upper_body/agnostic/000000_0.jpg').convert('RGB')
     img_agnostic = transforms.Resize(192, interpolation=2)(img_agnostic)
     img_agnostic = transforms.ToTensor()(img_agnostic)
     img_agnostic = transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))(img_agnostic)
 
     # pose = Image.open(osp.join(img_path, 'skeleton.jpg'))
-    pose = Image.open('/opt/ml/input/dresses/skeletons/020714_5.jpg')
+    pose = Image.open('/opt/ml/input/upper_body/skeletons/000000_5.jpg')
     pose = transforms.Resize(192, interpolation=2)(pose)
     pose = transforms.ToTensor()(pose)
     pose = transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))(pose)
