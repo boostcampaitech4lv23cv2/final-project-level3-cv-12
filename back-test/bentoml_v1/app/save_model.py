@@ -1,6 +1,10 @@
 from model import get_model
 import bentoml
 import argparse
+import torch
+from openpose.model import bodypose_model
+from openpose.util import transfer
+from model import SDAFNet_Tryon
 from carvekit.ml.wrap.tracer_b7 import TracerUniversalB7
 from carvekit.ml.wrap.fba_matting import FBAMatting
 import torch
@@ -8,6 +12,8 @@ import torch
 def get_config():
     parser = argparse.ArgumentParser()
     parser.add_argument('-d', '--daflow-path', default='/opt/ml/input/038_model_all_256_part2.pt', help='saved daflow-model path')
+    parser.add_argument('--openpose_path', default='./model/body_pose_model.pth', help='saved openpose model path')
+
     parser.add_argument('--device', default='cuda' if torch.cuda.is_available() else 'cpu', help='check device')
     parser.add_argument('--batch_size_matting', default=1, type=int)
     parser.add_argument('--batch_size_seg', default=1, type=int)
@@ -20,6 +26,7 @@ def get_config():
 
 if __name__ == "__main__":
     config = get_config()
+    sdafnet = SDAFNet_Tryon(ref_in_channel=6)
     
     ## Virtual try-on
     daflow = get_model(model_path=config.daflow_path)
@@ -41,3 +48,8 @@ if __name__ == "__main__":
         fp16=config.fp16,
     )
     bentoml.pytorch.save_model('traceruniversal', tracer)
+    openpose_model = bodypose_model()
+    model_dict = transfer(openpose_model,torch.load(config.openpose_path))
+    openpose_model.load_state_dict(model_dict)
+    openpose_model.eval()
+    bentoml.pytorch.save_model('model_openpose', openpose_model)
