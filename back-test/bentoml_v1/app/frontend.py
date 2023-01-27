@@ -27,7 +27,7 @@ def main():
         image_bytes = uploaded_file.getvalue()
         image = Image.open(io.BytesIO(image_bytes))
 
-        st.image(image, caption='Uploaded Image')
+        st.image(image.resize((256,192)), caption='Uploaded Image')
         st.write("Making avatar ...")
 
         # 기존 stremalit 코드
@@ -38,7 +38,7 @@ def main():
                        uploaded_file.type))
         ]
         
-        response = requests.post("http://localhost:8501/predict_from_image_byte", files=files)        
+        response = requests.post("http://localhost:8501/predict_from_image_byte", files=files)   
         result_image = Image.open(io.BytesIO(response.content))
 
         st.image(result_image, caption='Virtual Avatar')
