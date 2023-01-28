@@ -14,6 +14,7 @@
 
 #### 1. Cloth 업로드 
 예상 아바타 디렉터리 구조를 구상 중으로 get_avatar 함수 인풋으로 avatar_id, avatar_path 필요 ex) avatar_path=`dresses/avatar`
+```
 ├── avatar
     ├── agnostic
         ├── 000000_0.jpg
@@ -29,6 +30,7 @@
     ├── keypoints
         ├── ...
     ├── etc ...
+```
 
 #### 2. Cloth && Human 업로드
 업로드 된 두 가지 이미지를 requests로 전달

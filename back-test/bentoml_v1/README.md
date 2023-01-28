@@ -35,6 +35,7 @@ sol. `conda install pytorch==1.11.0 torchvision==0.12.0 torchaudio==0.11.0 cudat
 `path` : `back-test/bentoml_v1/checkpoints`
 
 `structure`
+```
 ├── checkpoints
     ├── daflow
         ├── ...
@@ -42,3 +43,4 @@ sol. `conda install pytorch==1.11.0 torchvision==0.12.0 torchaudio==0.11.0 cudat
         ├── ...
     ├── openpose
         ├── ...
+```
