@@ -3,11 +3,9 @@ import albumentations.pytorch
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-import numpy as np
 from torchvision import transforms
 from PIL import Image
-import io
-
+from os import path as osp
 from openpose.model import bodypose_model
 
 def apply_offset(offset):
@@ -336,22 +334,17 @@ def _transform_image(image):
     
     return transform(image=image)["image"].unsqueeze(0)
 
-def get_avatar(img_path: str = "./assets/daflow"):
-    from os import path as osp
-
-    # img = Image.open(osp.join(img_path, 'image.jpg'))
-    img = Image.open('/opt/ml/input/upper_body/images/000000_0.jpg')
+def get_avatar(avatar_id, avatar_path: str = "./assets/daflow"):
+    img = Image.open(osp.join(avatar_path, 'images', f'{avatar_id}_0.jpg')).convert('RGB')
     img = transforms.Resize(192, interpolation=2)(img)
     img = transforms.ToTensor()(img)
 
-    # img_agnostic = Image.open(osp.join(img_path, 'agnostic.jpg')).convert('RGB')
-    img_agnostic = Image.open('/opt/ml/input/upper_body/agnostic/000000_0.jpg').convert('RGB')
+    img_agnostic = Image.open(osp.join(avatar_path, 'agnostic', f'{avatar_id}_0.jpg')).convert('RGB')
     img_agnostic = transforms.Resize(192, interpolation=2)(img_agnostic)
     img_agnostic = transforms.ToTensor()(img_agnostic)
     img_agnostic = transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))(img_agnostic)
 
-    # pose = Image.open(osp.join(img_path, 'skeleton.jpg'))
-    pose = Image.open('/opt/ml/input/upper_body/skeletons/000000_5.jpg')
+    pose = Image.open(osp.join(avatar_path, 'skeletons', f'{avatar_id}_5.jpg')).convert('RGB')
     pose = transforms.Resize(192, interpolation=2)(pose)
     pose = transforms.ToTensor()(pose)
     pose = transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))(pose)
@@ -361,4 +354,5 @@ def get_avatar(img_path: str = "./assets/daflow"):
         'agnostic': img_agnostic,
         'pose': pose
     }
+    
     return result

@@ -13,6 +13,8 @@
 *.wandb
 wandb/
 *.out
+*.caffemodel
+*.prototxt
 
 ### Python ###
 # Byte-compiled / optimized / DLL files

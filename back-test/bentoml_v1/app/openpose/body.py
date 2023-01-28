@@ -8,7 +8,7 @@ import matplotlib
 import torch
 from torchvision import transforms
 
-import openpose.util
+import openpose.util as util
 from model import bodypose_model
 
 class Body(object):
@@ -45,7 +45,7 @@ class Body(object):
                 data = data.cuda()
             # data = data.permute([2, 0, 1]).unsqueeze(0).float()
             with torch.no_grad():
-                Mconv7_stage6_L1, Mconv7_stage6_L2 = self.model(data)
+                Mconv7_stage6_L1, Mconv7_stage6_L2 = self.model.run(data)
             Mconv7_stage6_L1 = Mconv7_stage6_L1.cpu().numpy()
             Mconv7_stage6_L2 = Mconv7_stage6_L2.cpu().numpy()
 

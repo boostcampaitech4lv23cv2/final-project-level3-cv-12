@@ -6,8 +6,7 @@ import os
 import argparse
 import json
 
-import model
-import openpose.util
+import openpose.util as util
 from openpose.body import Body
 
 class Openpose:

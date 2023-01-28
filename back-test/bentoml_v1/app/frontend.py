@@ -21,24 +21,28 @@ root_password = 'password'
 
 def main():
     st.title("Virtual Try-On Test")
-    uploaded_file = st.file_uploader("Choose an image", type=["jpg", "jpeg", "png"])
+    uploaded_cloth_file = st.file_uploader("Choose an cloth image", type=["jpg", "jpeg", "png"])
+    uploaded_human_file = st.file_uploader("Choose an human image", type=["jpg", "jpeg", "png"])
 
-    if uploaded_file:
-        image_bytes = uploaded_file.getvalue()
-        image = Image.open(io.BytesIO(image_bytes))
+    if uploaded_cloth_file and uploaded_human_file:
+        cloth_bytes = uploaded_cloth_file.getvalue()
+        cloth_image = Image.open(io.BytesIO(cloth_bytes))
 
-        st.image(image.resize((256,192)), caption='Uploaded Image')
+        human_bytes = uploaded_human_file.getvalue()
+        human_image = Image.open(io.BytesIO(human_bytes))
+        
+        st.image(cloth_image.resize((256,192)), caption='Uploaded Image')
+        st.image(human_image.resize((256,192)), caption='Uploaded Image')
         st.write("Making avatar ...")
-
-        # 기존 stremalit 코드
-        # _, y_hat = get_prediction(model, image_bytes)
-        # label = config['classes'][y_hat.item()]
+        
         files = [
-            ('files', (uploaded_file.name, image_bytes,
-                       uploaded_file.type))
+            ('cloth', (uploaded_cloth_file.name, cloth_bytes,
+                       uploaded_cloth_file.type)),
+            ('human', (uploaded_human_file.name, human_bytes,
+                       uploaded_human_file.type))
         ]
         
-        response = requests.post("http://localhost:8501/predict_from_image_byte", files=files)   
+        response = requests.post("http://localhost:8501/all-tryon", files=files)   
         result_image = Image.open(io.BytesIO(response.content))
 
         st.image(result_image, caption='Virtual Avatar')
