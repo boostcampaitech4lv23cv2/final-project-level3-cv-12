@@ -17,10 +17,8 @@ from utils.utils import AverageMeter
 
 import wandb
 
-import pytorch_ssim
 sys.path.append('../C-VTON/utils')
-from metrics import inception_score
-import time
+from metrics import inception_score, ssim #fid
 
 def get_opt():
     parser = argparse.ArgumentParser()
@@ -86,10 +84,12 @@ def train(opt, net):
         train_loss_l1 = AverageMeter()
         train_loss_vgg = AverageMeter()
         train_is = AverageMeter()
+        train_ssim = AverageMeter()
         val_loss_all = AverageMeter()
         val_loss_l1 = AverageMeter()
         val_loss_vgg = AverageMeter()
-        val_is = AverageMeter()        
+        val_is = AverageMeter()
+        val_ssim = AverageMeter()
         
         ### Train Loop ###
         net.train()
@@ -131,6 +131,7 @@ def train(opt, net):
             optimizer.step()
 
             # update
+            train_ssim.update(ssim(img, result_tryon).item(), n=opt.batch_size)
             train_is.update(inception_score(result_tryon, batch_size=opt.batch_size)[0], n=opt.batch_size)
             train_loss_all.update(loss_all.item(), n=opt.batch_size)
             train_loss_l1.update(loss_l1_stack.item(), n=opt.batch_size)
@@ -158,13 +159,12 @@ def train(opt, net):
                 f"{os.path.join(opt.save_dir, opt.name)}/checkpoints/{str(epoch).zfill(3)}_{str(opt.name)}.pt",
             )
 
-        print(f"[{epoch:3}/{opt.epoch:3}][{iterations}] TRAIN.  loss={train_loss_all.avg:<10.4f}loss_l1={train_loss_l1.avg:<10.4f}loss_vgg={train_loss_vgg.avg:<10.4f}IS={train_is.avg:<10.3f}")
+        print(f"[{epoch:3}/{opt.epoch:3}][{iterations}] TRAIN.  loss={train_loss_all.avg:<10.4f}loss_l1={train_loss_l1.avg:<10.4f}loss_vgg={train_loss_vgg.avg:<10.4f}IS={train_is.avg:<10.4f}SSIM={train_ssim.avg:<10.4f}")
         
         scheduler.step()
 
         
         ### Validation Loop ###
-        t0_val = time.time()
         net.eval()
         with torch.no_grad():
             for i, inputs in enumerate(tqdm.tqdm(val_loader)):
@@ -203,6 +203,7 @@ def train(opt, net):
                     loss_vgg_stack = loss_vgg_stack + (num+1)*loss_vgg
 
                 # update
+                val_ssim.update(ssim(img, result_tryon).item(), n=opt.batch_size)
                 val_is.update(inception_score(result_tryon, batch_size=opt.batch_size)[0], n=opt.batch_size)
                 val_loss_all.update(loss_all.item(), n=opt.batch_size)
                 val_loss_l1.update(loss_l1_stack.item(), n=opt.batch_size)
@@ -218,14 +219,16 @@ def train(opt, net):
                 "train_loss_l1": train_loss_l1.avg,
                 "train_loss_vgg": train_loss_vgg.avg,
                 "train_is": train_is.avg,
+                "train_ssim": train_ssim.avg,
 
                 "val_loss": val_loss_all.avg,
                 "val_loss_l1": val_loss_l1.avg,
                 "val_loss_vgg": val_loss_vgg.avg,
                 "val_is": val_is.avg,
+                "val_ssim": val_ssim.avg
             })
 
-            print(f"[{epoch:3}/{opt.epoch:3}][{iterations}] VAL.    loss={val_loss_all.avg:<10.4f}loss_l1={val_loss_l1.avg:<10.4f}loss_vgg={val_loss_vgg.avg:<10.4f} IS={val_is.avg:<10.3f}")
+            print(f"[{epoch:3}/{opt.epoch:3}][{iterations}] VAL.    loss={val_loss_all.avg:<10.4f}loss_l1={val_loss_l1.avg:<10.4f}loss_vgg={val_loss_vgg.avg:<10.4f} IS={val_is.avg:<10.4f}SSIM={val_ssim.avg:<10.4f}")
 
 
 def main():
