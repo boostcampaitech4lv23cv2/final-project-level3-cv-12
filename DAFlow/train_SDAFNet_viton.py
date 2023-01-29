@@ -1,4 +1,4 @@
-import os
+import sys, os
 import tqdm
 import argparse
 
@@ -17,6 +17,10 @@ from utils.utils import AverageMeter
 
 import wandb
 
+import pytorch_ssim
+sys.path.append('../C-VTON/utils')
+from metrics import inception_score
+import time
 
 def get_opt():
     parser = argparse.ArgumentParser()
@@ -32,11 +36,11 @@ def get_opt():
     parser.add_argument('--load_height', type=int, default=256)
     parser.add_argument('--load_width', type=int, default=192)
     parser.add_argument('--shuffle', action='store_false')
-    parser.add_argument('--mode', type=str, default='train')
 
     parser.add_argument('--dataset_dir', type=str, default='../data/dress_code')
     parser.add_argument('--dataset_imgpath', nargs='+', default=['upper_body'])
-    parser.add_argument('--dataset_list', type=str, default='train_pairs.txt')
+    parser.add_argument('--dataset_train_list', type=str, default='train_pairs.txt')
+    parser.add_argument('--dataset_val_list', type=str, default='test_pairs_paired.txt')
 
     parser.add_argument('--use_checkpoint', action='store_true')
     parser.add_argument('-c', '--checkpoint_dir', type=str, default='./ckpt_viton.pt')
@@ -52,8 +56,10 @@ def get_opt():
 
 
 def train(opt, net):
-    train_dataset = DressCodeDataset(opt)
+    train_dataset = DressCodeDataset(opt, mode='train')
     train_loader = data.DataLoader(train_dataset, batch_size=opt.batch_size, drop_last=True, shuffle=opt.shuffle, num_workers=opt.workers)
+    val_dataset = DressCodeDataset(opt, mode='val')
+    val_loader = data.DataLoader(val_dataset, batch_size=opt.batch_size, drop_last=True, shuffle=opt.shuffle, num_workers=opt.workers)
 
     #wandb setting
     wandb.init(project=opt.project_name,
@@ -76,9 +82,17 @@ def train(opt, net):
     for epoch in range(1, opt.epoch):
         print(f"### Start {epoch}/{opt.epoch} Train ###")
 
-        loss_l1_avg = AverageMeter()
-        loss_vgg_avg = AverageMeter()
-
+        train_loss_all = AverageMeter()
+        train_loss_l1 = AverageMeter()
+        train_loss_vgg = AverageMeter()
+        train_is = AverageMeter()
+        val_loss_all = AverageMeter()
+        val_loss_l1 = AverageMeter()
+        val_loss_vgg = AverageMeter()
+        val_is = AverageMeter()        
+        
+        ### Train Loop ###
+        net.train()
         for i, inputs in enumerate(tqdm.tqdm(train_loader)):
             iterations+=1
 
@@ -91,8 +105,10 @@ def train(opt, net):
             ref_input = torch.cat((pose, img_agnostic), dim=1)
             result_tryon, results_all = net(ref_input, cloth_img, img_agnostic, return_all=True)
 
-            epsilon = 0.001
+            # loss
             loss_all = 0
+            loss_l1_stack = 0
+            loss_vgg_stack = 0
             num_layer = 5
             for num in range(num_layer):
                 cur_img = F.interpolate(img, scale_factor=0.5**(4-num), mode='bilinear')
@@ -104,26 +120,21 @@ def train(opt, net):
 
                 loss_perceptual = criterion_percept(cur_img.cuda(),results_all[num]).mean()
                 loss_content, loss_style = criterion_style(results_all[num], cur_img.cuda())
-
                 loss_vgg = loss_perceptual+100*loss_style+0.1*loss_content
-                loss_all = loss_all + (num+1) * loss_l1 + (num + 1)  * loss_vgg
 
-            loss = loss_all
-            loss_l1_avg.update(loss.item())
-            loss_vgg_avg.update(loss_vgg.item())
+                loss_all = loss_all + (num+1)*loss_l1 + (num+1)*loss_vgg
+                loss_l1_stack = loss_l1_stack + (num+1)*loss_l1
+                loss_vgg_stack = loss_vgg_stack + (num+1)*loss_vgg
+
             optimizer.zero_grad()
-            loss.backward()
+            loss_all.backward()
             optimizer.step()
 
-            wandb.log({
-                "epoch": epoch,
-                "iteration": iterations,
-                "learning_rate": optimizer.param_groups[0]['lr'],
-                "l1_loss": loss_l1.item(),
-                "l1_loss_avg": loss_l1_avg.avg,
-                "vgg_loss": loss_vgg.item(),
-                "vgg_loss_avg": loss_vgg_avg.avg
-            })
+            # update
+            train_is.update(inception_score(result_tryon, batch_size=opt.batch_size)[0], n=opt.batch_size)
+            train_loss_all.update(loss_all.item(), n=opt.batch_size)
+            train_loss_l1.update(loss_l1_stack.item(), n=opt.batch_size)
+            train_loss_vgg.update(loss_vgg_stack.item(), n=opt.batch_size)
 
             if iterations % opt.display_freq == 1:
                 parse_pred = torch.cat([cloth_img, img_agnostic, result_tryon, img], 2)
@@ -136,6 +147,7 @@ def train(opt, net):
                         range=(-1, 1),
                     )
 
+        # save
         if epoch % opt.save_freq == 0:
             torch.save(
                 {
@@ -146,8 +158,74 @@ def train(opt, net):
                 f"{os.path.join(opt.save_dir, opt.name)}/checkpoints/{str(epoch).zfill(3)}_{str(opt.name)}.pt",
             )
 
-        print("[%d %d][%d] l1_loss:%.4f %.4f vgg_loss:%.4f %.4f "%(epoch, opt.epoch, iterations, loss_l1.item(), loss_l1_avg.avg, loss_vgg.item(), loss_vgg_avg.avg))
+        print(f"[{epoch:3}/{opt.epoch:3}][{iterations}] TRAIN.  loss={train_loss_all.avg:<10.4f}loss_l1={train_loss_l1.avg:<10.4f}loss_vgg={train_loss_vgg.avg:<10.4f}IS={train_is.avg:<10.3f}")
+        
         scheduler.step()
+
+        
+        ### Validation Loop ###
+        t0_val = time.time()
+        net.eval()
+        with torch.no_grad():
+            for i, inputs in enumerate(tqdm.tqdm(val_loader)):
+                img = inputs['img'].cuda()  # normalize image
+                img_agnostic = inputs['img_agnostic'].cuda() # Masked model image
+                pose = inputs['pose'].cuda()
+                cloth_img = inputs['cloth'].cuda()
+
+                img =  F.interpolate(img, size=(opt.load_height, opt.load_width), mode='bilinear')
+                cloth_img = F.interpolate(cloth_img, size=(opt.load_height, opt.load_width), mode='bilinear')
+                img_agnostic = F.interpolate(img_agnostic, size=(opt.load_height, opt.load_width), mode='bilinear')
+                pose = F.interpolate(pose, size=(opt.load_height, opt.load_width), mode='bilinear')
+                ref_input = torch.cat((pose, img_agnostic), dim=1)
+
+                result_tryon, results_all = net(ref_input, cloth_img, img_agnostic, return_all=True)
+
+                # loss
+                loss_all = 0
+                loss_l1_stack = 0
+                loss_vgg_stack = 0
+                num_layer = 5
+                for num in range(num_layer):
+                    cur_img = F.interpolate(img, scale_factor=0.5**(4-num), mode='bilinear')
+                    loss_l1 = criterion_L1(results_all[num], cur_img.cuda())
+
+                    if num == 0:
+                        cur_img = F.interpolate(cur_img, scale_factor=2, mode='bilinear')
+                        results_all[num] = F.interpolate(results_all[num], scale_factor=2, mode='bilinear')
+
+                    loss_perceptual = criterion_percept(cur_img.cuda(),results_all[num]).mean()
+                    loss_content, loss_style = criterion_style(results_all[num], cur_img.cuda())
+                    loss_vgg = loss_perceptual+100*loss_style+0.1*loss_content
+
+                    loss_all = loss_all + (num+1) * loss_l1 + (num + 1)  * loss_vgg
+                    loss_l1_stack = loss_l1_stack + (num+1)*loss_l1
+                    loss_vgg_stack = loss_vgg_stack + (num+1)*loss_vgg
+
+                # update
+                val_is.update(inception_score(result_tryon, batch_size=opt.batch_size)[0], n=opt.batch_size)
+                val_loss_all.update(loss_all.item(), n=opt.batch_size)
+                val_loss_l1.update(loss_l1_stack.item(), n=opt.batch_size)
+                val_loss_vgg.update(loss_vgg_stack.item(), n=opt.batch_size)
+
+            # logging
+            wandb.log({
+                "epoch": epoch,
+                "iteration": iterations,
+                "learning_rate": optimizer.param_groups[0]['lr'],
+                
+                "train_loss": train_loss_all.avg,
+                "train_loss_l1": train_loss_l1.avg,
+                "train_loss_vgg": train_loss_vgg.avg,
+                "train_is": train_is.avg,
+
+                "val_loss": val_loss_all.avg,
+                "val_loss_l1": val_loss_l1.avg,
+                "val_loss_vgg": val_loss_vgg.avg,
+                "val_is": val_is.avg,
+            })
+
+            print(f"[{epoch:3}/{opt.epoch:3}][{iterations}] VAL.    loss={val_loss_all.avg:<10.4f}loss_l1={val_loss_l1.avg:<10.4f}loss_vgg={val_loss_vgg.avg:<10.4f} IS={val_is.avg:<10.3f}")
 
 
 def main():
