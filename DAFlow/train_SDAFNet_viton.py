@@ -154,8 +154,8 @@ def main():
     opt = get_opt()
     print(opt)
 
-    os.makedirs(os.path.join(opt.save_dir, opt.name, 'log_images'))
-    os.makedirs(os.path.join(opt.save_dir, opt.name, 'checkpoints'))
+    os.makedirs(os.path.join(opt.save_dir, opt.name, 'log_images'), exist_ok=True)
+    os.makedirs(os.path.join(opt.save_dir, opt.name, 'checkpoints'), exist_ok=True)
 
     if not os.path.exists(opt.save_dir):
         os.makedirs(opt.save_dir)
