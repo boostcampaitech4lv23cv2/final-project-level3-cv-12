@@ -147,6 +147,18 @@ def train(opt, net):
                         normalize=True,
                         range=(-1, 1),
                     )
+            
+            wandb.log({
+                "epoch": epoch,
+                "iteration": iterations,
+                "learning_rate": optimizer.param_groups[0]['lr'],
+                
+                "train_loss": train_loss_all.avg,
+                "train_loss_l1": train_loss_l1.avg,
+                "train_loss_vgg": train_loss_vgg.avg,
+                "train_is": train_is.avg,
+                "train_ssim": train_ssim.avg,
+            })
 
         # save
         if epoch % opt.save_freq == 0:
@@ -213,13 +225,6 @@ def train(opt, net):
             wandb.log({
                 "epoch": epoch,
                 "iteration": iterations,
-                "learning_rate": optimizer.param_groups[0]['lr'],
-                
-                "train_loss": train_loss_all.avg,
-                "train_loss_l1": train_loss_l1.avg,
-                "train_loss_vgg": train_loss_vgg.avg,
-                "train_is": train_is.avg,
-                "train_ssim": train_ssim.avg,
 
                 "val_loss": val_loss_all.avg,
                 "val_loss_l1": val_loss_l1.avg,
