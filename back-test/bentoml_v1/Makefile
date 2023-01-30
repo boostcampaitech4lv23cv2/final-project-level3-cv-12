@@ -5,7 +5,7 @@ run_server:
 	bentoml serve vton_daflow:latest --port 8501
 
 run_client:
-	python3 -m streamlit run app/frontend.py --server.port 30003 --server.fileWatcherType none
+	python3 -m streamlit run app/homepage.py --server.port 30003 --server.fileWatcherType none
 
 run_app: run_server run_client
 

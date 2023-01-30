@@ -334,17 +334,20 @@ def _transform_image(image):
     
     return transform(image=image)["image"].unsqueeze(0)
 
-def get_avatar(avatar_id, avatar_path: str = "./assets/daflow"):
-    img = Image.open(osp.join(avatar_path, 'images', f'{avatar_id}_0.jpg')).convert('RGB')
+def get_avatar(avatar_path: str = "./assets/daflow"):
+    avatar_name = avatar_path.split('/')[-1].replace('.jpg', '')
+    avatar_path = osp.dirname(avatar_path)
+
+    img = Image.open(osp.join(avatar_path, 'images', f'{avatar_name}_0.jpg')).convert('RGB')
     img = transforms.Resize(192, interpolation=2)(img)
     img = transforms.ToTensor()(img)
 
-    img_agnostic = Image.open(osp.join(avatar_path, 'agnostic', f'{avatar_id}_0.jpg')).convert('RGB')
+    img_agnostic = Image.open(osp.join(avatar_path,'agnostic', f'{avatar_name}_0.jpg')).convert('RGB')
     img_agnostic = transforms.Resize(192, interpolation=2)(img_agnostic)
     img_agnostic = transforms.ToTensor()(img_agnostic)
     img_agnostic = transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))(img_agnostic)
 
-    pose = Image.open(osp.join(avatar_path, 'skeletons', f'{avatar_id}_5.jpg')).convert('RGB')
+    pose = Image.open(osp.join(avatar_path, 'skeletons', f'{avatar_name}_5.jpg')).convert('RGB')
     pose = transforms.Resize(192, interpolation=2)(pose)
     pose = transforms.ToTensor()(pose)
     pose = transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))(pose)
