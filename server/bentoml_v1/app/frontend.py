@@ -51,7 +51,6 @@ def main():
 def authenticate(password) -> bool:
     return password == root_password
 
-
 password = st.text_input('password', type="password")
 
 if authenticate(password):

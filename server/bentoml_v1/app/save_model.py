@@ -15,9 +15,9 @@ from collections import OrderedDict
 
 def get_config():
     parser = argparse.ArgumentParser()
-    parser.add_argument('-d', '--daflow-path', default='/opt/ml/input/final-project-level3-cv-12/back-test/bentoml_v1/checkpoints/daflow/097_mod_all_256.pt', help='saved daflow model path')
-    parser.add_argument('--openpose-path', default='/opt/ml/input/final-project-level3-cv-12/back-test/bentoml_v1/checkpoints/openpose/body_pose_model.pth', help='saved openpose model path')
-    parser.add_argument('--parser-path', default='/opt/ml/input/final-project-level3-cv-12/back-test/bentoml_v1/checkpoints/human_parser/exp-schp-201908261155-lip.pth', help='saved human parser model path')
+    parser.add_argument('-d', '--daflow-path', default='/opt/ml/input/final-project-level3-cv-12/server/bentoml_v1/checkpoints/daflow/097_mod_all_256.pt', help='saved daflow model path')
+    parser.add_argument('--openpose-path', default='/opt/ml/input/final-project-level3-cv-12/server/bentoml_v1/checkpoints/openpose/body_pose_model.pth', help='saved openpose model path')
+    parser.add_argument('--parser-path', default='/opt/ml/input/final-project-level3-cv-12/server/bentoml_v1/checkpoints/human_parser/exp-schp-201908261155-lip.pth', help='saved human parser model path')
     parser.add_argument('--device', default='cuda' if torch.cuda.is_available() else 'cpu', help='check device')
     parser.add_argument('--batch-size-matting', default=1, type=int)
     parser.add_argument('--batch-size-seg', default=1, type=int)

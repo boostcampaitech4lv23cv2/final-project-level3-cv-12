@@ -4,11 +4,12 @@
 2. `conda create -n {env.name}`
 3. `conda activate env.name`
 4. `pip install -r requirements.txt` in shell
-5. `cd app`
-6. `python save_model.py --model_path {checkpoint model path}`
-7. `bentoml build`
-8. `cd ..`
-9. `make -j 2 run_app`
+5. `conda install pytorch==1.11.0 torchvision==0.12.0 torchaudio==0.11.0 cudatoolkit=11.3 -c pytorch`
+6. `cd app`
+7. `python save_model.py --daflow-path {path} --openpose-path {path} --parser-path {path} (checkpoint model path)`
+8. `bentoml build`
+9. `cd ..`
+10. `make -j 2 run_app`
 
 ## if your model saved in bentoml.models and modifying service content
 
@@ -16,10 +17,6 @@
 2. `bentoml build`
 3. `cd ..`
 4. `make -j 2 run_app`
-
-## error issue
-1. `importerror: libcudart.so.11.0: cannot open shared object file: no such file or directory`
-sol. `conda install pytorch==1.11.0 torchvision==0.12.0 torchaudio==0.11.0 cudatoolkit=11.3 -c pytorch`
 
 ## Checkpoint
 
@@ -32,7 +29,7 @@ sol. `conda install pytorch==1.11.0 torchvision==0.12.0 torchaudio==0.11.0 cudat
 [Human_parser](https://drive.google.com/u/0/uc?id=1k4dllHpu0bdx38J7H28rVVLpU-kOHmnH&export=download)
 
 #### make checkpoints dir structure & path
-`path` : `back-test/bentoml_v1/checkpoints`
+`path` : `server/bentoml_v1/checkpoints`
 
 `structure`
 ```

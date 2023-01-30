@@ -7,7 +7,7 @@ import torch.backends.cudnn as cudnn
 from bentoml.io import Image, Multipart, Text
 import numpy as np
 from torchvision import transforms
-from carvekit.api.high import HiInterface
+from carvekit_custom.high import HiInterface
 import os
 
 cudnn.benchmark = True

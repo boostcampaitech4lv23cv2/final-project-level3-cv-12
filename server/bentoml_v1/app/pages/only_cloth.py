@@ -86,8 +86,8 @@ def main():
     with col2:
         if inference:
             if uploaded_only_cloth_file:
-                response = requests.post("http://localhost:8501/cloth-tryon", files=files)
-                st.spinner("Wait for it ...")
+                with st.spinner("Wait for it …"):
+                    response = requests.post("http://localhost:8501/cloth-tryon", files=files)
 
                 result_image = Image.open(io.BytesIO(response.content))
                 st.image(result_image.resize((384, 512)), caption='Virtual Avatar')
