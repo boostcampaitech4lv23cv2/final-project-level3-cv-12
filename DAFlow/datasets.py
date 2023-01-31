@@ -596,6 +596,7 @@ class DressCodeDataset(data.Dataset):
            print(img_name)
            #raise error
         img_agnostic = self.transform(img_agnostic)  # [-1,1]
+        
         if self.mode =='train' and random.random()>0.5:
             result = {
             'img_name': img_name,
