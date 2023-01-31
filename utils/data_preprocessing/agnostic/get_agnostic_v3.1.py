@@ -55,11 +55,11 @@ def get_args():
 def get_agnostic(args, imgs, im_parse, pose_label, part):
     transform = transforms.Compose([
         transforms.ToTensor(),
-        transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
+        # transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
     ])
     transform2D = transforms.Compose([
         transforms.ToTensor(),
-        transforms.Normalize((0.5, ), (0.5, ))
+        # transforms.Normalize((0.5, ), (0.5, ))
     ])
     img = transform(imgs)
     img_parse = im_parse

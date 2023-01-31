@@ -85,14 +85,14 @@ def get_palette(num_cls):
 
 
 def get_parser_map(model, image):
-    num_classes = dataset_settings['lip']['num_classes']
-    input_size = dataset_settings['lip']['input_size']
-    label = dataset_settings['lip']['label']
+    num_classes = dataset_settings['atr']['num_classes']
+    input_size = dataset_settings['atr']['input_size']
+    label = dataset_settings['atr']['label']
     # print("Evaluating total class number {} with {}".format(num_classes, label))
 
     transform = transforms.Compose([
         transforms.ToTensor(),
-        transforms.Normalize(mean=[0.406, 0.456, 0.485], std=[0.225, 0.224, 0.229])
+        # transforms.Normalize(mean=[0.406, 0.456, 0.485], std=[0.225, 0.224, 0.229])
     ])
     dataset = SimpleFolderDataset(image=image, input_size=input_size, transform=transform)
     dataloader = DataLoader(dataset)
