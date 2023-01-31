@@ -27,15 +27,16 @@ def get_openpose(model, human):
     return skeleton, keypoint   # skeleton은 image, keypoint는 json
 
 def get_human_parse(model, human):
-    parser_map = get_parser_map(model, human)
+    human_parse = np.array(human)
+    parser_map = get_parser_map(model, human_parse)
     
     return parser_map
 
-def get_human_agnostic(human, human_parse, skeleton, part):
+def get_human_agnostic(human, human_parse, keypoint, part):
     h, w, _ = np.array(human).shape
     radius = 10
-    
-    agnostic = get_agnostic(human, human_parse, skeleton, part, h, w, radius)
+    human_np = np.array(human)    
+    agnostic = get_agnostic(human_np, human_parse, keypoint, part, h, w, radius)
     
     return agnostic
 

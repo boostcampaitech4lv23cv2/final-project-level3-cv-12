@@ -41,7 +41,6 @@ interface = HiInterface(object_type="object",  # Can be "object" or "hairs-like"
                             fba=fba_runner,
                             tracer=tracer_runner)
 
-# @svc.api(input=Image(), output=Image(), route='/cloth-tryon')
 @svc.api(input=Multipart(cloth=Image(), avatar_path=Text()), output=Image(), route='/cloth-tryon')
 async def predict_from_cloth(cloth, avatar_path):
     image = preprocess.cloth_removed_background(interface, cloth)
@@ -66,7 +65,7 @@ async def predict_from_cloth(cloth, avatar_path):
 
     return imgs
 
-save_dir = '/opt/ml/input/final-project-level3-cv-12/back-test/bentoml_v1/app/result_sample'
+save_dir = '/opt/ml/input/final-project-level3-cv-12/server/bentoml_v1/app/result_sample'
 os.makedirs(save_dir, exist_ok=True)
 
 @svc.api(input=Multipart(part=Text(), cloth=Image(), human=Image()), output=Image(), route='/all-tryon')
