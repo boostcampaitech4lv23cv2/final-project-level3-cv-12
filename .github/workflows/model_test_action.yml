@@ -15,46 +15,67 @@ permissions:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     steps:
     - uses: actions/checkout@v3
     - name: Set up Python 3.8
       uses: actions/setup-python@v3
       with:
         python-version: "3.8"
-    - name: Install dependencies
-      working-directory: "back-test/fastapi"
+    - name: Install Poetry
       run: |
-        python -m pip install --upgrade pip
-        pip install pytest
-        sudo apt-get install curl
         curl -sSL https://install.python-poetry.org | python3 -
         export PATH=~/.local/bin:$PATH
+        poetry run python -V
+        source $(poetry env info --path)/bin/activate
+    - name: Install dependencies
+      run: |
+        source $(poetry env info --path)/bin/activate
         poetry install
+        make run_apt_install_ci
+        pip install pytest gdown
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+      
+# sudo apt-get install curl
+# curl -sSL https://install.python-poetry.org | python3 -
+# export PATH=~/.local/bin:$PATH
+# poetry install
 #     - name: Lint with flake8
 #       run: |
 #         # stop the build if there are Python syntax errors or undefined names
 #         flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
 #         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
 #         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+    - name: Save bentoml models
+      working-directory: "service/back-end/app"
+      run: |
+        source $(poetry env info --path)/bin/activate
+        wget https://www.dropbox.com/s/lc90lac0ha135op/038_model_all_256_part2.pt -O DAFlow256.pt
+        wget https://www.dropbox.com/s/kg9e0m6sr2j3fp0/003_allbody_512_upscale_low_lr.pt -O DAFlow512.pt
+        wget https://www.dropbox.com/sh/7xbup2qsn7vvjxo/AABWFksdlgOMXR_r5v3RwKRYa? -O Openpose.zip
+        unzip ./Openpose.zip -x /
+        wget https://www.dropbox.com/s/w6rgpnjyp11j6fr/exp-schp-201908301523-atr.pth -O HumanParser.pt
+        python save_model.py --daflow-path ./DAFlow256.pt --openpose-path ./body_pose_model.pth --parser-path ./HumanParser.pt
+    
     - name: build test
       shell: bash
-      working-directory: "back-test/fastapi"
       run: |
-        nohup python3 -m app > fastapi.out &
-        nohup python3 -m streamlit run app/frontend.py --server.port 8501 > streamlit.out &
+        source $(poetry env info --path)/bin/activate
+        make run_build
+        nohup python3 -m streamlit run service/front-end/homepage.py --server.port 30003 --server.fileWatcherType none &
+        nohup bentoml serve vton_daflow:latest --port 8501 &
     - name: inference and save result with elapsed time
-      working-directory: "back-test/fastapi"
+      working-directory: "test"
       run: |
-        pytest test/test.py
+        source $(poetry env info --path)/bin/activate
+        pytest test.py
+    # - name: 테스트 결과를 PR에 코멘트로 등록합니다
+    #   uses: thollander/actions-comment-pull-request@v2.3.1
+    #   with:
+    #     filePath: test/result.jpg
     - name: 테스트 결과를 PR에 코멘트로 등록합니다
       uses: thollander/actions-comment-pull-request@v2.3.1
       with:
-        filePath: back-test/fastapi/result.jpg
-    - name: 테스트 결과를 PR에 코멘트로 등록합니다
-      uses: thollander/actions-comment-pull-request@v2.3.1
-      with:
-        filePath: back-test/fastapi/elapsed_time.json
+        filePath: test/elapsed_time.json
         
         

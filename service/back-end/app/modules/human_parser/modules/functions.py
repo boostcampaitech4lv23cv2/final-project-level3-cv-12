@@ -6,16 +6,31 @@ import torch.cuda.comm as comm
 from torch.autograd.function import once_differentiable
 from torch.utils.cpp_extension import load
 
+device = "cuda" if torch.cuda.is_available() else "cpu"
+
 _src_path = path.join(path.dirname(path.abspath(__file__)), "src")
-_backend = load(name="inplace_abn",
-                extra_cflags=["-O3"],
-                sources=[path.join(_src_path, f) for f in [
+srcs = []
+
+if device == "cuda":
+    srcs = [path.join(_src_path, f) for f in [
                     "inplace_abn.cpp",
                     "inplace_abn_cpu.cpp",
                     "inplace_abn_cuda.cu",
                     "inplace_abn_cuda_half.cu"
-                ]],
-                extra_cuda_cflags=["--expt-extended-lambda"])
+                ]]
+    load_kwargs = { "extra_cuda_cflags": ["--expt-extended-lambda"] }
+else:
+    srcs = [path.join(_src_path, f) for f in [
+                    "inplace_abn.cpp",
+                    "inplace_abn_cpu.cpp",
+                ]]
+    load_kwargs = { "with_cuda": False } 
+    
+                
+_backend = load(name="inplace_abn",
+                extra_cflags=["-O3"],
+                sources=srcs,
+                **load_kwargs)
 
 # Activation names
 ACT_RELU = "relu"
