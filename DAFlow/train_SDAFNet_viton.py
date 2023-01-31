@@ -1,4 +1,4 @@
-import sys, os
+import os
 import tqdm
 import argparse
 
@@ -14,11 +14,9 @@ from models.sdafnet import SDAFNet_Tryon
 from models import external_function
 from utils import lpips
 from utils.utils import AverageMeter
+from utils.metrics import inception_score, ssim #fid
 
 import wandb
-
-sys.path.append('../C-VTON/utils')
-from metrics import inception_score, ssim #fid
 
 def get_opt():
     parser = argparse.ArgumentParser()
@@ -83,7 +81,7 @@ def train(opt, net):
         train_loss_all = AverageMeter()
         train_loss_l1 = AverageMeter()
         train_loss_vgg = AverageMeter()
-        train_is = AverageMeter()
+        #train_is = AverageMeter()
         train_ssim = AverageMeter()
         val_loss_all = AverageMeter()
         val_loss_l1 = AverageMeter()
@@ -132,7 +130,7 @@ def train(opt, net):
 
             # update
             train_ssim.update(ssim(img, result_tryon).item(), n=opt.batch_size)
-            train_is.update(inception_score(result_tryon, batch_size=opt.batch_size)[0], n=opt.batch_size)
+            #train_is.update(inception_score(result_tryon, batch_size=opt.batch_size)[0], n=opt.batch_size)
             train_loss_all.update(loss_all.item(), n=opt.batch_size)
             train_loss_l1.update(loss_l1_stack.item(), n=opt.batch_size)
             train_loss_vgg.update(loss_vgg_stack.item(), n=opt.batch_size)
@@ -156,7 +154,7 @@ def train(opt, net):
                 "train_loss": train_loss_all.avg,
                 "train_loss_l1": train_loss_l1.avg,
                 "train_loss_vgg": train_loss_vgg.avg,
-                "train_is": train_is.avg,
+                #"train_is": train_is.avg,
                 "train_ssim": train_ssim.avg,
             })
 
@@ -171,7 +169,7 @@ def train(opt, net):
                 f"{os.path.join(opt.save_dir, opt.name)}/checkpoints/{str(epoch).zfill(3)}_{str(opt.name)}.pt",
             )
 
-        print(f"[{epoch:3}/{opt.epoch:3}][{iterations}] TRAIN.  loss={train_loss_all.avg:<10.4f}loss_l1={train_loss_l1.avg:<10.4f}loss_vgg={train_loss_vgg.avg:<10.4f}IS={train_is.avg:<10.4f}SSIM={train_ssim.avg:<10.4f}")
+        print(f"[{epoch:3}/{opt.epoch:3}][{iterations}] TRAIN.  loss={train_loss_all.avg:<10.4f}loss_l1={train_loss_l1.avg:<10.4f}loss_vgg={train_loss_vgg.avg:<10.4f}SSIM={train_ssim.avg:<10.4f}")
         
         scheduler.step()
 
