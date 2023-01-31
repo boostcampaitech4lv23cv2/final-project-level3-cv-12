@@ -17,14 +17,14 @@ def get_config():
     parser = argparse.ArgumentParser()
     parser.add_argument('-d', '--daflow-path', default='/opt/ml/input/final-project-level3-cv-12/server/bentoml_v1/checkpoints/daflow/097_mod_all_256.pt', help='saved daflow model path')
     parser.add_argument('--openpose-path', default='/opt/ml/input/final-project-level3-cv-12/server/bentoml_v1/checkpoints/openpose/body_pose_model.pth', help='saved openpose model path')
-    parser.add_argument('--parser-path', default='/opt/ml/input/final-project-level3-cv-12/server/bentoml_v1/checkpoints/human_parser/exp-schp-201908261155-lip.pth', help='saved human parser model path')
+    parser.add_argument('--parser-path', default='/opt/ml/input/final-project-level3-cv-12/server/bentoml_v1/checkpoints/human_parser/exp-schp-201908301523-atr.pth', help='saved human parser model path')
     parser.add_argument('--device', default='cuda' if torch.cuda.is_available() else 'cpu', help='check device')
     parser.add_argument('--batch-size-matting', default=1, type=int)
     parser.add_argument('--batch-size-seg', default=1, type=int)
     parser.add_argument('--matting-mask-size', default=2048, type=int)
     parser.add_argument('--seg-mask-size', default=640, type=int)
     parser.add_argument('--fp16', action='store_true')
-    parser.add_argument('--parser-classes', default=20, type=int)
+    parser.add_argument('--parser-classes', default=18, type=int)
     config = parser.parse_args()
     
     return config

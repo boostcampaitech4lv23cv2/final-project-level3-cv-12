@@ -30,17 +30,20 @@ label_map={
 def get_agnostic(imgs, im_parse, pose_label, part, height, width, radius):
     transform = transforms.Compose([
         transforms.ToTensor(),
-        transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
+        # transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
     ])
     transform2D = transforms.Compose([
         transforms.ToTensor(),
-        transforms.Normalize((0.5, ), (0.5, ))
+        # transforms.Normalize((0.5, ), (0.5, ))
     ])
     img = transform(imgs)
     img_parse = im_parse
     parse_array = np.array(img_parse)
     pose_datas = pose_label
 
+    for i in range(18):
+        pose_datas['keypoints'][i][0] /= 2
+        pose_datas['keypoints'][i][1] /= 2
 
     parse_head = (parse_array == 1).astype(np.float32) + \
                  (parse_array == 2).astype(np.float32) + \

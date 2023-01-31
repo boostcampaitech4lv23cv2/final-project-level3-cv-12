@@ -26,7 +26,7 @@
 
 [Openpose](https://www.dropbox.com/sh/7xbup2qsn7vvjxo/AABWFksdlgOMXR_r5v3RwKRYa?dl=0)
 
-[Human_parser](https://drive.google.com/u/0/uc?id=1k4dllHpu0bdx38J7H28rVVLpU-kOHmnH&export=download)
+[Human_parser](https://drive.google.com/u/0/uc?id=1ruJg4lqR_jgQPj-9K0PP-L2vJERYOxLP&export=download)
 
 #### make checkpoints dir structure & path
 `path` : `server/bentoml_v1/checkpoints`
