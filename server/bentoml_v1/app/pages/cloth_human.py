@@ -41,8 +41,14 @@ def main():
 
         if uploaded_cloth_file:
             cloth_image_bytes = uploaded_cloth_file.getvalue()
-            cloth_image = Image.open(io.BytesIO(cloth_image_bytes))
-            st.image(cloth_image.resize((384, 512)), caption='Cloth Image')
+            cloth_image = Image.open(io.BytesIO(cloth_image_bytes)).resize((384, 512))
+            
+            cloth_image_byte_arr = io.BytesIO()
+            cloth_image.save(cloth_image_byte_arr, format='PNG')
+            cloth_image_bytes = cloth_image_byte_arr.getvalue()
+            
+            st.image(cloth_image, caption='Cloth Image')
+            
             files.append(
                 ("cloth", (uploaded_cloth_file.name, cloth_image_bytes, 
                            uploaded_cloth_file.type))
@@ -57,7 +63,12 @@ def main():
 
         if uploaded_human_file:
             human_image_bytes = uploaded_human_file.getvalue()
-            human_image = Image.open(io.BytesIO(human_image_bytes))
+            human_image = Image.open(io.BytesIO(human_image_bytes)).resize((384, 512))
+            
+            human_image_byte_arr = io.BytesIO()
+            human_image.save(human_image_byte_arr, format='PNG')
+            human_image_bytes = human_image_byte_arr.getvalue()
+            
             st.image(human_image.resize((384, 512)), caption="Your Avatar")
             files.append(
                 ("human", (uploaded_human_file.name, human_image_bytes, 

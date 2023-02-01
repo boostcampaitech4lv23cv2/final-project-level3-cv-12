@@ -41,9 +41,9 @@ def get_agnostic(imgs, im_parse, pose_label, part, height, width, radius):
     parse_array = np.array(img_parse)
     pose_datas = pose_label
 
-    for i in range(18):
-        pose_datas['keypoints'][i][0] /= 2
-        pose_datas['keypoints'][i][1] /= 2
+    for i in range(len(pose_datas['keypoints'])):
+        pose_datas['keypoints'][i][0] /= (height / 512.0)
+        pose_datas['keypoints'][i][1] /= (width / 384.0)
 
     parse_head = (parse_array == 1).astype(np.float32) + \
                  (parse_array == 2).astype(np.float32) + \

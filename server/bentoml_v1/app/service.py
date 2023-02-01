@@ -9,6 +9,9 @@ import numpy as np
 from torchvision import transforms
 from carvekit_custom.high import HiInterface
 import os
+import json
+
+from torchvision.utils import save_image
 
 cudnn.benchmark = True
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
@@ -59,6 +62,8 @@ async def predict_from_cloth(cloth, avatar_path):
 
     tryon_result = vton_runner.run(ref_input, cloth_img, img_agnostic).detach()
 
+    save_image(tryon_result, '/opt/ml/final/result.jpg', nrow=1, normalize=True, range=(-1,1))
+
     imgs = ((tryon_result.squeeze().permute(1, 2, 0).cpu().numpy()*0.5+0.5)*255).astype(np.uint8)
     transf = transforms.ToPILImage()
     imgs = transf(imgs)
@@ -78,6 +83,10 @@ async def predict_from_cloth_human(part, cloth, human):
     skeleton, keypoint = preprocess.get_openpose(openpose_runner, human)
     parser_map = preprocess.get_human_parse(parser_runner, human)
     parser_map.save(f'{save_dir}/parser_map.png', 'png')
+
+    print(keypoint)
+    with open(f'{save_dir}/keypoints.json', 'w') as f:
+        json.dump(keypoint, f)
     
     img_agnostic = preprocess.get_human_agnostic(human, parser_map, keypoint, part)
     img_agnostic = (img_agnostic.permute(1, 2, 0).numpy()*255).astype(np.uint8)
