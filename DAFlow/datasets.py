@@ -531,9 +531,10 @@ class DAFDataLoader:
 
 
 class DressCodeDataset(data.Dataset):
-    def __init__(self, opt):
+    def __init__(self, opt, mode):
         super(DressCodeDataset, self).__init__()
         self.opt = opt
+        self.mode = mode
         self.load_height = opt.load_height
         self.load_width = opt.load_width
         # self.data_path = osp.join(opt.dataset_dir, opt.dataset_imgpath)
@@ -547,7 +548,11 @@ class DressCodeDataset(data.Dataset):
 
         for c in opt.dataset_imgpath:
             data_path = osp.join(opt.dataset_dir, c)
-            with open(osp.join(opt.dataset_dir, c, opt.dataset_list), 'r') as f:
+            if self.mode == 'train':
+                list_path = osp.join(opt.dataset_dir, c, opt.dataset_train_list)
+            elif self.mode == 'val':
+                list_path = osp.join(opt.dataset_dir, c, opt.dataset_val_list)
+            with open(list_path, 'r') as f:
                 for line in f.readlines():
                     img_name, c_name = line.split()
                     img_names.append(img_name)
@@ -591,7 +596,8 @@ class DressCodeDataset(data.Dataset):
            print(img_name)
            #raise error
         img_agnostic = self.transform(img_agnostic)  # [-1,1]
-        if self.opt.mode =='train':
+        
+        if self.mode =='train' and random.random()>0.5:
             result = {
             'img_name': img_name,
             'c_name': c_name,
@@ -608,7 +614,7 @@ class DressCodeDataset(data.Dataset):
             'img_agnostic': img_agnostic,
             'pose': pose_rgb,
             'cloth': c,
-            'img_ori': img_original,
+            #'img_ori': img_original,
             }
         return result
 
