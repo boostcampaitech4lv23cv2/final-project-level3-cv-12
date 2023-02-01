@@ -1,10 +1,10 @@
 ## How to run server
 
-1. `poetry install`
-2. `poetry shell`
+1. `poetry shell`
+2. `poetry install`
 3. `make run_apt_install`
 4. `download models checkpoints`
-5. `python save_model.py --daflow-path {path} --openpose-path {path} --parser-path {path} (checkpoint model path)`
+5. `python service/back-end/app/save_model.py --daflow-path {path} --openpose-path {path} --parser-path {path} (checkpoint model path)`
 6. `make run_build`
 7. `make -j 2 run_app`
 
