@@ -206,7 +206,7 @@ def main():
             st.image(cloth_image, caption='Cloth Image')
     with col2:
         if len(image_path) >= 3:
-            avatar_image_path = f"{os.getcwd()}/app/sample_images/{image_path[1]}/{image_path[2].split('_')[1]}/{image_path[0]}.jpg"
+            avatar_image_path = f"{os.getcwd()}/service/back-end/sample_images/{image_path[1]}/{image_path[2].split('_')[1]}/{image_path[0]}.jpg"
             avatar_image = Image.open(avatar_image_path)
             st.image(avatar_image.resize((384, 512)), caption="Your Avatar")
             files.append(
