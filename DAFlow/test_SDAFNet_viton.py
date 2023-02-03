@@ -39,7 +39,7 @@ def get_opt():
 
 
 def test(opt, net):
-    test_dataset = DressCodeDataset(opt)
+    test_dataset = DressCodeDataset(opt, mode='val')
     test_loader = data.DataLoader(test_dataset, batch_size=opt.batch_size, shuffle=opt.shuffle, num_workers=opt.workers)
     with torch.no_grad():
         for i, inputs in enumerate(tqdm.tqdm(test_loader)):
