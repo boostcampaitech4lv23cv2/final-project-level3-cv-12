@@ -80,6 +80,7 @@ def get_agnostic(imgs, im_parse, pose_label, part, height, width, radius):
         parse_mask = (
             (parse_array == 7).astype(np.float32)
             + (parse_array == 6).astype(np.float32)
+            + (parse_array == 4).astype(np.float32)
             + (parse_array == 12).astype(np.float32)
             + (parse_array == 13).astype(np.float32)
         )
