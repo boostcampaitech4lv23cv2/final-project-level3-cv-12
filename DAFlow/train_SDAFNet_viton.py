@@ -14,7 +14,7 @@ from models.sdafnet import SDAFNet_Tryon
 from models import external_function
 from utils import lpips
 from utils.utils import AverageMeter
-from utils.metrics import inception_score, ssim #fid
+from utils.metrics import ssim #fid, inception_score
 
 import wandb
 
@@ -86,7 +86,7 @@ def train(opt, net):
         val_loss_all = AverageMeter()
         val_loss_l1 = AverageMeter()
         val_loss_vgg = AverageMeter()
-        val_is = AverageMeter()
+        # val_is = AverageMeter()
         val_ssim = AverageMeter()
         
         ### Train Loop ###
@@ -214,7 +214,7 @@ def train(opt, net):
 
                 # update
                 val_ssim.update(ssim(img, result_tryon).item(), n=opt.batch_size)
-                val_is.update(inception_score(result_tryon, batch_size=opt.batch_size)[0], n=opt.batch_size)
+                # val_is.update(inception_score(result_tryon, batch_size=opt.batch_size)[0], n=opt.batch_size)
                 val_loss_all.update(loss_all.item(), n=opt.batch_size)
                 val_loss_l1.update(loss_l1_stack.item(), n=opt.batch_size)
                 val_loss_vgg.update(loss_vgg_stack.item(), n=opt.batch_size)
@@ -227,11 +227,11 @@ def train(opt, net):
                 "val_loss": val_loss_all.avg,
                 "val_loss_l1": val_loss_l1.avg,
                 "val_loss_vgg": val_loss_vgg.avg,
-                "val_is": val_is.avg,
+                # "val_is": val_is.avg,
                 "val_ssim": val_ssim.avg
             })
 
-            print(f"[{epoch:3}/{opt.epoch:3}][{iterations}] VAL.    loss={val_loss_all.avg:<10.4f}loss_l1={val_loss_l1.avg:<10.4f}loss_vgg={val_loss_vgg.avg:<10.4f} IS={val_is.avg:<10.4f}SSIM={val_ssim.avg:<10.4f}")
+            print(f"[{epoch:3}/{opt.epoch:3}][{iterations}] VAL.    loss={val_loss_all.avg:<10.4f}loss_l1={val_loss_l1.avg:<10.4f}loss_vgg={val_loss_vgg.avg:<10.4f} SSIM={val_ssim.avg:<10.4f}")
 
 
 def main():
