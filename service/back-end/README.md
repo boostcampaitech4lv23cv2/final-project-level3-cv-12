@@ -20,24 +20,49 @@
 
 ## Checkpoint
 
-[DAFlow_256_192_checkpoint](https://www.dropbox.com/s/lc90lac0ha135op/038_model_all_256_part2.pt?dl=0)
+[DAFlow_256_192_checkpoint](https://www.dropbox.com/s/6kogpt90zgw7wxp/100_mod_all_256.pt)
 
-[DAFlow_512_384_checkpoint](https://www.dropbox.com/s/kg9e0m6sr2j3fp0/003_allbody_512_upscale_low_lr.pt?dl=0)
+[DAFlow_512_384_checkpoint](https://www.dropbox.com/s/kg9e0m6sr2j3fp0/003_allbody_512_upscale_low_lr.pt)
 
 [Openpose](https://www.dropbox.com/sh/7xbup2qsn7vvjxo/AABWFksdlgOMXR_r5v3RwKRYa?dl=0)
 
-[Human_parser](https://drive.google.com/u/0/uc?id=1ruJg4lqR_jgQPj-9K0PP-L2vJERYOxLP&export=download)
+[Human_parser](https://www.dropbox.com/s/w6rgpnjyp11j6fr/exp-schp-201908301523-atr.pth)
 
-#### make checkpoints dir structure & path
+## make checkpoints dir structure & path
 `path` : `server/bentoml_v1/checkpoints`
 
-`structure`
+## Folder structure
 ```
-├── checkpoints
-    ├── daflow
-        ├── ...
-    ├── human_parser
-        ├── ...
-    ├── openpose
-        ├── ...
+├── app/
+│   ├── modules/
+│   │   ├── agnostic/
+│   │   ├── carvekit_custom/
+│   │   ├── human_parser/
+│   │   ├── openpose/
+│   │   ├── model.py
+│   │   └── preprocess.py
+│   ├── bentofile.yaml
+│   ├── README.md
+│   ├── save_model.py
+│   └── service.py
+├── checkpoints/
+│   ├── daflow/
+│   │   ├── ...
+│   ├── human_parser/
+│   │   ├── ...
+│   └── openpose/
+│       ├── ...
+└── sample_images/
+    ├── dress/
+    │   └── etc/
+    │       ├── agnostic/
+    │       ├── images/
+    │       ├── skeletons/
+    │       ├── Woman_a.jpg
+    │       ├── ...
+    │       └── Woman_e.jpg
+    ├── long/
+    │   └── ...
+    └── short/
+        └── ...
 ```
