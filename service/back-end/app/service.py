@@ -10,6 +10,7 @@ from torchvision import transforms
 from modules.carvekit_custom.high import HiInterface
 import os
 import json
+import cv2
 
 from torchvision.utils import save_image
 
@@ -96,7 +97,8 @@ async def predict_from_cloth_human(part, cloth, human):
     img_agnostic = img_agnostic.to(device) # Masked model image
     img_agnostic = img_agnostic.unsqueeze(0)
     
-    skeleton = (skeleton*255).astype(np.uint8)
+    skeleton = skeleton.astype(np.uint8)
+    skeleton = cv2.cvtColor(skeleton, cv2.COLOR_BGR2RGB)
     pImage.fromarray(skeleton).save(f'{save_dir}/skeleton.png', 'png')
     skeleton = preprocess.transform_image(pImage.fromarray(skeleton))
     skeleton = skeleton.to(device)
