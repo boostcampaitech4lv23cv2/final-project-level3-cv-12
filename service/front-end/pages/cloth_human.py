@@ -7,36 +7,60 @@ from PIL import Image
 
 import streamlit as st
 
-
 # SETTING PAGE CONFIG TO WIDE MODE
 ASSETS_DIR_PATH = os.path.join(Path(__file__).parent.parent.parent.parent, "assets")
 
 
+def check_dress():
+    st.session_state.dress, st.session_state.upper, st.session_state.lower = 1, 0, 0
+def check_upper():
+    st.session_state.dress, st.session_state.upper, st.session_state.lower = 0, 1, 0
+def check_lower():
+    st.session_state.dress, st.session_state.upper, st.session_state.lower = 0, 0, 1
+
+# initial
+if 'dress' not in st.session_state:
+    st.session_state.dress = 0
+    st.session_state.upper = 0
+    st.session_state.lower = 0
+
+
 def main():
-    st.title("Virtual Try-On - Cloth and Human")
+    cloth_category = ["드레스", "상의", "하의"]
+    cloth_states = [st.session_state.dress, st.session_state.upper, st.session_state.lower]
+    cloth_on_changes = [check_dress, check_upper, check_lower]
+    dir_root = os.getcwd()
 
-    st.info("You need to upload cloth and body image", icon="💡")
+    st.title("의류 가상 피팅 서비스 - Cloth and Human")
+    for _ in range(3):
+        st.write("")
+    st.write("##### ✔ 입을 옷 유형을 선택해 주세요.")
+    st.write("")
 
-    cloth_type = st.radio(
-        "Select cloth type.",
-        ("dresses", "upper", "lower"),
-        horizontal=True
-    )
-    st.write(f"You selected {cloth_type}")
-
-    st.write("---")
+    cols = st.columns(3)
+    for idx, col in enumerate(cols):
+        with col:
+            st.checkbox(cloth_category[idx], value=cloth_states[idx], on_change=cloth_on_changes[idx])
 
     files = list()
-    files.append(
-        ('part', (cloth_type))
-    )
+    if st.session_state.dress:
+        files.append(('part', ('dress')))
+    if st.session_state.upper:
+        files.append(('part', ('upper')))
+    if st.session_state.lower:
+        files.append(('part', ('lower')))
+
+    for _ in range(3):
+        st.write("")
 
     col1, col2 = st.columns(2)
     with col1:
+        st.write("##### 👕  옷 사진을 업로드 해주세요.")
         uploaded_cloth_file = st.file_uploader(
-            "Upload your cloth", 
+            "Upload your cloth.", 
             type=["jpg", "jpeg", "png"],
-            key='cloth'
+            key='cloth',
+            label_visibility="hidden"
         )
 
         if uploaded_cloth_file:
@@ -47,18 +71,22 @@ def main():
             cloth_image.save(cloth_image_byte_arr, format='PNG')
             cloth_image_bytes = cloth_image_byte_arr.getvalue()
             
-            st.image(cloth_image, caption='Cloth Image')
+            st.image(cloth_image)
             
             files.append(
                 ("cloth", (uploaded_cloth_file.name, cloth_image_bytes, 
                            uploaded_cloth_file.type))
             )
+        else: 
+            st.image(Image.open(os.path.join(dir_root, 'service/front-end/images/DALLE_illust_1.png')).resize((384, 512)))
 
     with col2:
+        st.write("##### 🧍‍♀️  모델 사진을 업로드 해주세요.")
         uploaded_human_file = st.file_uploader(
-            "Upload your body", 
+            "Upload your avatar.", 
             type=["jpg", "jpeg", "png"],
-            key='body'
+            key='body',
+            label_visibility="hidden"
         )
 
         if uploaded_human_file:
@@ -69,33 +97,40 @@ def main():
             human_image.save(human_image_byte_arr, format='PNG')
             human_image_bytes = human_image_byte_arr.getvalue()
             
-            st.image(human_image.resize((384, 512)), caption="Your Avatar")
+            st.image(human_image.resize((384, 512)))
             files.append(
                 ("human", (uploaded_human_file.name, human_image_bytes, 
                            uploaded_human_file.type))
             )
+        else:
+            st.image(Image.open(os.path.join(dir_root, 'service/front-end/images/DALLE_illust_1.png')).resize((384, 512)))
 
-    _, _, col_3, _, _= st.columns(5)
-    with col_3:
-        inference = st.button("Inference Button")
+    for _ in range(2):
+        st.write("")
+
+    _, col, _= st.columns([2, 0.71, 2])
+    with col:
+        inference = st.button("입어보기!")
         
-    _, col2, _ = st.columns([1.2, 3, 1])
-    with col2:
-        if inference:
-            if uploaded_cloth_file and uploaded_human_file:
-                with st.spinner("Wait for it …"):
+    if inference:
+        if uploaded_cloth_file and uploaded_human_file:
+            _, col2, _ = st.columns([2, 1, 2])
+            with col2:
+                with st.spinner("입는 중 …"):
                     response = requests.post("http://localhost:8501/all-tryon", files=files)
-                
-                result_image = Image.open(io.BytesIO(response.content))
-                st.image(result_image.resize((384, 512)), caption='Virtual Avatar')
-            else:
-                st.info("Please Upload Cloth", icon='🔥')
+            
+            result_image = Image.open(io.BytesIO(response.content))    
+            _, col, _ = st.columns([1, 2, 1])
+            with col:
+                st.image(result_image.resize((384, 512)))
+        else:
+            st.info("사진을 업로드 해주세요.", icon='🔥')
 
-    _, col2, _ = st.columns([2.3, 3, 1])
+    _, col2, _ = st.columns([2, 0.67, 2])
     with col2:
         if inference:
             btn = st.download_button(
-                    label="Download result image",
+                    label="다운로드",
                     data=response.content,
                     file_name="result.jpg",
                     mime="image/jpg"
