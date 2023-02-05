@@ -26,11 +26,11 @@ def get_opt():
 
     parser.add_argument('-b', '--batch_size', type=int, default=4)
     parser.add_argument('--lr', type=float, default=0.00005)
-    parser.add_argument('--epoch', type=str, default=200)
+    parser.add_argument('--epoch', type=int, default=200)
     parser.add_argument('-j', '--workers', type=int, default=4)
 
-    parser.add_argument('--load_height', type=int, default=256)
-    parser.add_argument('--load_width', type=int, default=192)
+    parser.add_argument('--load_height', type=int, default=256) #512
+    parser.add_argument('--load_width', type=int, default=192) #384
     parser.add_argument('--shuffle', action='store_false')
 
     parser.add_argument('--dataset_dir', type=str, default='../data/dress_code')
@@ -46,6 +46,8 @@ def get_opt():
     parser.add_argument('--save_freq', type=int, default=10)
 
     parser.add_argument('--multi_flows', type=int, default=6)
+
+    parser.add_argument('--epoch_start', type=int, default=1)  # added by sangho
 
     opt = parser.parse_args()
     return opt
@@ -74,8 +76,12 @@ def train(opt, net):
     #scheduler
     scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=30, gamma=0.2)
 
-    iterations = 0
-    for epoch in range(1, opt.epoch):
+    if opt.epoch_start == 1:
+        iterations = 0
+    else:
+        iterations = (opt.epoch_start - 1) * (len(train_dataset) // opt.batch_size)
+
+    for epoch in range(opt.epoch_start, opt.epoch):
         print(f"### Start {epoch}/{opt.epoch} Train ###")
 
         train_loss_all = AverageMeter()

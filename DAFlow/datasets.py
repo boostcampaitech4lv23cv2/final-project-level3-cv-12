@@ -552,6 +552,8 @@ class DressCodeDataset(data.Dataset):
                 list_path = osp.join(opt.dataset_dir, c, opt.dataset_train_list)
             elif self.mode == 'val':
                 list_path = osp.join(opt.dataset_dir, c, opt.dataset_val_list)
+            else:
+                list_path = osp.join(opt.dataset_dir, c, opt.dataset_list)
             with open(list_path, 'r') as f:
                 for line in f.readlines():
                     img_name, c_name = line.split()

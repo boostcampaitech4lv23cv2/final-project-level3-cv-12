@@ -16,7 +16,6 @@ Drawing img_agnostic(use data_preprocessing/get_agnostic_v3.0.py):
 python get_agnostic_v3.0.py
 ```
 
-
 ## Train
 ```python
 python train_SDAFNet_viton.py {--name} {--project_name} {-b} {--dataset_dir} {--dataset_imgpath}
@@ -27,7 +26,6 @@ python train_SDAFNet_viton.py {--name} {--project_name} {-b} {--dataset_dir} {--
   python train_SDAFNet_viton.py --name model_256 --project_name DAFlow_train -b 4 --dataset_dir '/opt/ml/final/data/dress_code' --dataset_imgpath 'dresses' 'upper_body' 'lower_body'
   ```
 
-
 ## Inference
 ```python
 python test_SDAFNet_viton.py {--name} {-b} {--dataset_dir} {--dataset_imgpath} {--dataset_list} {-c}
@@ -37,7 +35,6 @@ python test_SDAFNet_viton.py {--name} {-b} {--dataset_dir} {--dataset_imgpath} {
   ```python
   python test_SDAFNet_viton.py --name test -b 4 --dataset_dir '/opt/ml/final/data/dress_code' --dataset_imgpath 'dresses' 'upper_body' 'lower_body' --dataset_list 'test_pairs_unpaired.txt' -c 'result/model_256/checkpoints/model.pt'
   ```
-
 
 ## Acknowledgement
 
