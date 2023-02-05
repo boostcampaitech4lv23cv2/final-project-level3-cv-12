@@ -20,15 +20,13 @@ def cloth_removed_background(interface, image):
 
 def get_openpose(model, human):
     openpose = Openpose(model)
-    numpy_image=np.array(human)  
-    human_bgr=cv2.cvtColor(numpy_image, cv2.COLOR_RGB2BGR)
-    skeleton, keypoint = openpose.get_bodypose(human_bgr)
+    human_bgr=cv2.cvtColor(human, cv2.COLOR_RGB2BGR)
+    openpose_result = openpose.get_bodypose(human_bgr)
     
-    return skeleton, keypoint   # skeleton은 image, keypoint는 json
+    return openpose_result   # skeleton은 image, keypoint는 json
 
 def get_human_parse(model, human):
-    human_parse = np.array(human)
-    parser_map = get_parser_map(model, human_parse)
+    parser_map = get_parser_map(model, human)
     
     return parser_map
 
