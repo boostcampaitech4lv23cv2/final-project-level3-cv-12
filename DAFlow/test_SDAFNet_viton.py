@@ -27,7 +27,7 @@ def get_opt():
 
     parser.add_argument('--dataset_dir', type=str, default='./data')
     parser.add_argument('--dataset_imgpath', nargs='+', default=['upper_body'])
-    parser.add_argument('--dataset_list', type=str, default='test_unpairs.txt')
+    parser.add_argument('--dataset_list', type=str, default='test_pairs_unpaired.txt')
 
     parser.add_argument('-c', '--checkpoint_dir', type=str, default='ckpt_viton.pt')
     parser.add_argument('--save_dir', type=str, default='./results/')
@@ -39,7 +39,7 @@ def get_opt():
 
 
 def test(opt, net):
-    test_dataset = DressCodeDataset(opt, mode='val')
+    test_dataset = DressCodeDataset(opt, mode='test')
     test_loader = data.DataLoader(test_dataset, batch_size=opt.batch_size, shuffle=opt.shuffle, num_workers=opt.workers)
     with torch.no_grad():
         for i, inputs in enumerate(tqdm.tqdm(test_loader)):
@@ -49,7 +49,7 @@ def test(opt, net):
             img_agnostic = inputs['img_agnostic'].cuda() # Masked model image
             pose = inputs['pose'].cuda()
             cloth_img = inputs['cloth'].cuda()
-            img_ori = inputs['img_ori'].cuda()  # not normalize image
+            #img_ori = inputs['img_ori'].cuda()  # not normalize image
 
             img =  F.interpolate(img, size=(opt.load_height, opt.load_width), mode='bilinear')
             cloth_img = F.interpolate(cloth_img, size=(opt.load_height, opt.load_width), mode='bilinear')
@@ -63,7 +63,8 @@ def test(opt, net):
                 save_image(tryon_result[j:j+1], os.path.join(opt.save_dir, opt.name, "vis_viton_out", img_names[j]), nrow=1, normalize=False, range=(-1,1))
 
             if opt.add_compare:
-                tryon_result = torch.cat([img_ori, img, cloth_img, img_agnostic, tryon_result], 2)
+                #tryon_result = torch.cat([img_ori, img, cloth_img, img_agnostic, tryon_result], 2)
+                tryon_result = torch.cat([img, cloth_img, img_agnostic, tryon_result], 2)
                 save_image(tryon_result, os.path.join(opt.save_dir, opt.name, "compare_out", img_names[0]), nrow=10, normalize=False, range=(-1,1))
 
 

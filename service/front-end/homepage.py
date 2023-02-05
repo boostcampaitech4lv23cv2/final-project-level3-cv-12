@@ -23,7 +23,7 @@ def main():
     st.write()
     st.image(Image.open(os.path.join(dir_root, 'service/front-end/images/DALLE_illust_1.png')))
     
-    _, col, _ = st.columns([1, 3.3, 1])
+    _, col, _ = st.columns([1, 3.2, 1])
     with col:
         for _ in range(5):
             st.write("")

@@ -31,9 +31,31 @@ def main():
     cloth_on_changes = [check_dress, check_upper, check_lower]
     dir_root = os.getcwd()
 
-    st.title("의류 가상 피팅 서비스 - Cloth and Human")
+    _, col, _ = st.columns([1, 3.2, 1])
+    with col:
+        st.title("의류 가상 피팅 서비스")
+    _, col, _ = st.columns([1, 2, 1])
+    with col:
+        st.title("Cloth and Human")
     for _ in range(3):
         st.write("")
+
+    # guide
+    guide = st.checkbox("권장 사항")
+    if guide:
+        st.info(
+            """
+            옷은 겹쳐서 가려지는 부분이 없는 사진을 업로드 해주세요. \n
+            
+            모델이 가이드 윤곽선에 맞게 위치한 사진을 업로드 해주세요. (아래 그림 참고) \n
+
+            모델이 입을 옷과 유사한 형태의 옷을 입은 사진을 권장합니다.
+            """
+        )
+        _, col, _ = st.columns([1, 2, 1])
+        with col:
+            st.image(Image.open(os.path.join(dir_root, 'service/front-end/images/DALLE_illust_1.png')).resize((384, 512)))
+
     st.write("##### ✔ 입을 옷 유형을 선택해 주세요.")
     st.write("")
 
@@ -77,8 +99,8 @@ def main():
                 ("cloth", (uploaded_cloth_file.name, cloth_image_bytes, 
                            uploaded_cloth_file.type))
             )
-        else: 
-            st.image(Image.open(os.path.join(dir_root, 'service/front-end/images/DALLE_illust_1.png')).resize((384, 512)))
+        #else: 
+        #    st.image(Image.open(os.path.join(dir_root, 'service/front-end/images/DALLE_illust_1.png')).resize((384, 512)))
 
     with col2:
         st.write("##### 🧍‍♀️  모델 사진을 업로드 해주세요.")
