@@ -2,8 +2,8 @@
 
 - Datasets: DressCode Dataset
 - Base Checkpoints: [ckpt_viton.pt](https://ofa-beijing.oss-cn-beijing.aliyuncs.com/checkpoints/ckpt_viton.pt)
-- python 3.6
-- pytorch1.7
+- python > 3.6
+- pytorch 1.7
 - torchvision 0.8
 
 Download weights(vgg, alex, squeeze):
@@ -13,7 +13,7 @@ Download weights(vgg, alex, squeeze):
 
 Drawing img_agnostic(use data_preprocessing/get_agnostic_v3.0.py):
 ```python
-python get_agnostic_v3.0.py
+python get_agnostic_v3.1.py
 ```
 
 ## Train
