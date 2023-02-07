@@ -13,6 +13,7 @@ import json
 import cv2
 
 from torchvision.utils import save_image
+from concurrent.futures import ThreadPoolExecutor
 
 cudnn.benchmark = True
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
@@ -32,7 +33,8 @@ fba_runner = fba_model.to_runner()
 parser_model = bentoml.models.get('human_parser:latest')
 parser_runner = parser_model.to_runner()
 
-svc = bentoml.Service('vton_daflow', runners=[vton_runner, openpose_runner, tracer_runner, fba_runner, parser_runner])
+svc = bentoml.Service('vton_daflow', runners=[vton_runner, openpose_runner, tracer_runner, fba_runner, parser_runner],
+                      models=[vton_model, openpose_model, tracer_model, fba_model, parser_model])
 
 interface = HiInterface(object_type="object",  # Can be "object" or "hairs-like".
                             batch_size_seg=1,
@@ -63,8 +65,6 @@ async def predict_from_cloth(cloth, avatar_path):
 
     tryon_result = vton_runner.run(ref_input, cloth_img, img_agnostic).detach()
 
-    save_image(tryon_result, '/opt/ml/final/result.jpg', nrow=1, normalize=True, range=(-1,1))
-
     imgs = ((tryon_result.squeeze().permute(1, 2, 0).cpu().numpy()*0.5+0.5)*255).astype(np.uint8)
     transf = transforms.ToPILImage()
     imgs = transf(imgs)
@@ -74,18 +74,28 @@ async def predict_from_cloth(cloth, avatar_path):
 save_dir = '/opt/ml/input/final-project-level3-cv-12/service/back-end/app/result_sample'
 os.makedirs(save_dir, exist_ok=True)
 
-@svc.api(input=Multipart(part=Text(), cloth=Image(), human=Image()), output=Image(), route='/all-tryon')
-async def predict_from_cloth_human(part, cloth, human):
-    cloth = preprocess.cloth_removed_background(interface, cloth)
-    cloth_img = _transform_image(cloth).to(device)
-    test = ((cloth_img.squeeze().permute(1, 2, 0).cpu().numpy()*0.5+0.5)*255).astype(np.uint8)
-    pImage.fromarray(test).save(f'{save_dir}/cloth.png', 'png')
+from multiprocessing import Pool
+import time
 
-    skeleton, keypoint = preprocess.get_openpose(openpose_runner, human)
-    parser_map = preprocess.get_human_parse(parser_runner, human)
+@svc.api(input=Multipart(part=Text(), cloth=Image(), human=Image()), output=Image(), route='/all-tryon')
+def predict_from_cloth_human(part, cloth, human):
+    human = np.array(human)
+
+    with ThreadPoolExecutor(3) as executor:
+        openpose = executor.submit(preprocess.get_openpose, openpose_runner, human)
+        cloth = executor.submit(preprocess.cloth_removed_background, interface, cloth)
+        parser_map = executor.submit(preprocess.get_human_parse, parser_runner, human)
+    
+    skeleton, keypoint = openpose.result()
+    cloth = cloth.result()
+    parser_map = parser_map.result()
+    
+    cloth_img = _transform_image(cloth).to(device)
+    cloth_img_result = ((cloth_img.squeeze().permute(1, 2, 0).cpu().numpy()*0.5+0.5)*255).astype(np.uint8)
+    pImage.fromarray(cloth_img_result).save(f'{save_dir}/cloth.png', 'png')
+
     parser_map.save(f'{save_dir}/parser_map.png', 'png')
 
-    print(keypoint)
     with open(f'{save_dir}/keypoints.json', 'w') as f:
         json.dump(keypoint, f)
     
