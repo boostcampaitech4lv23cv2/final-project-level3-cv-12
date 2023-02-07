@@ -34,9 +34,9 @@ def main():
     _, col, _ = st.columns([1, 3.2, 1])
     with col:
         st.title("의류 가상 피팅 서비스")
-    _, col, _ = st.columns([1, 2, 1])
+    _, col, _ = st.columns([1, 1.8, 1])
     with col:
-        st.title("Cloth and Human")
+        st.write("### 사용자 지정 모델 활용하기")
     for _ in range(3):
         st.write("")
 
@@ -54,7 +54,7 @@ def main():
         )
         _, col, _ = st.columns([1, 2, 1])
         with col:
-            st.image(Image.open(os.path.join(dir_root, 'service/front-end/images/guide_image.png')).resize((384, 512)))
+            st.image(Image.open(os.path.join(dir_root, 'service/front-end/images/guide_image_1.1.png')).resize((384, 512)))
 
     st.write("##### ✔ 입을 옷 유형을 선택해 주세요.")
     st.write("")

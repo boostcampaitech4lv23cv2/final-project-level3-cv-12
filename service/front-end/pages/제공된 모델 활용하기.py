@@ -62,9 +62,9 @@ def main():
     _, col, _ = st.columns([1, 3.2, 1])
     with col:
         st.title("의류 가상 피팅 서비스")
-    _, col, _ = st.columns([1, 1.2, 1])
+    _, col, _ = st.columns([1, 1.3, 1])
     with col:
-        st.write("## Cloth and Avatar")
+        st.write("### 제공된 모델 활용하기")
     for _ in range(3):
         st.write("")
 
@@ -80,7 +80,7 @@ def main():
 
     # 옷 타입, 아바타 타입 고르기
 
-    st.write("##### ✔ 입을 옷 유형과 모델을 선택해 주세요.")
+    st.write("##### ✔ 입을 옷 유형과 모델 사진을 선택해 주세요.")
     st.write("")
 
     col1, col2, col3 = st.columns(3)
