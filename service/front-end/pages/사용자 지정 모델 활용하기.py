@@ -54,7 +54,7 @@ def main():
         )
         _, col, _ = st.columns([1, 2, 1])
         with col:
-            st.image(Image.open(os.path.join(dir_root, 'service/front-end/images/guide_image.png')).resize((384, 512)))
+            st.image(Image.open(os.path.join(dir_root, 'service/front-end/images/guide_image_1.1.png')).resize((384, 512)))
 
     st.write("##### ✔ 입을 옷 유형을 선택해 주세요.")
     st.write("")

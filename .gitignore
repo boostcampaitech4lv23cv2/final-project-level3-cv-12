@@ -3,7 +3,7 @@
 
 # custom
 *.png
-*.jpg
+#*.jpg
 *.jpeg
 *.csv
 *.json
@@ -15,8 +15,8 @@ wandb/
 *.out
 *.caffemodel
 *.prototxt
+DAFlow/results/*
 !service/front-end/images/*.png
-#!service/front-end/images/intro_1.png
 
 ### Python ###
 # Byte-compiled / optimized / DLL files
