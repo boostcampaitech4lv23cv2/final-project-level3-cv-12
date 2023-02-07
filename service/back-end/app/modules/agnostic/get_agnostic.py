@@ -75,7 +75,7 @@ def get_agnostic(imgs, im_parse, pose_label, part, height, width, radius):
         np.float32
     )
 
-    if part == "dresses":
+    if part == "dress":
         label_cat = 7
         parse_mask = (
             (parse_array == 7).astype(np.float32)
@@ -166,7 +166,7 @@ def get_agnostic(imgs, im_parse, pose_label, part, height, width, radius):
     arms_draw = ImageDraw.Draw(im_arms)
 
     parse_head_2 = torch.clone(parse_head)
-    if part == "dresses" or part == "upper":
+    if part == "dress" or part == "upper":
         data = pose_datas
         shoulder_right = np.multiply(tuple(data["keypoints"][2][:2]), height / 512.0)
         shoulder_left = np.multiply(tuple(data["keypoints"][5][:2]), height / 512.0)
