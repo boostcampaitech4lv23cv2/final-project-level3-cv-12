@@ -41,7 +41,7 @@ def main():
     cloth_on_changes = [check_dress, check_upper, check_lower]
     dir_root = os.getcwd()
 
-    guide_line_path = os.path.join(dir_root, "service/front-end/images/002.png")
+    guide_line_path = os.path.join(dir_root, "service/front-end/images/guide_line.png")
     guide_image = Image.open(guide_line_path).convert("RGB").resize((768, 1024))
 
     _, col, _ = st.columns([1, 3.2, 1])
@@ -166,7 +166,9 @@ def main():
         else:
             st.image(
                 Image.open(
-                    os.path.join(dir_root, "service/front-end/images/guide_image.png")
+                    os.path.join(
+                        dir_root, "service/front-end/images/guide_image_1.1.png"
+                    )
                 ).resize((384, 512))
             )
 
