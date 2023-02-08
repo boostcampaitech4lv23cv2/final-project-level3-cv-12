@@ -9,7 +9,7 @@ run_checkpoints_download:
 	wget https://www.dropbox.com/s/w6rgpnjyp11j6fr/exp-schp-201908301523-atr.pth -P ./service/back-end/checkpoints/human_parser
 
 run_server:
-	bentoml serve vton_daflow:latest --port 8502
+	bentoml serve vton_daflow:latest --port 8501
 
 run_client:
 	python3 -m streamlit run service/front-end/homepage.py --server.port 30003 --server.fileWatcherType none
