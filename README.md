@@ -1,24 +1,40 @@
 ## Members
+
+
 | <img src="https://avatars.githubusercontent.com/u/71074220?v=4" width=200> | <img src="https://avatars.githubusercontent.com/u/77265724?v=4" width=200> | <img src="https://avatars.githubusercontent.com/u/82555245?v=4" width=200> | <img src="https://avatars.githubusercontent.com/u/74371211?v=4" width=200> |
- | :-------------------------------------------------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------------------------------------------: |
-|                                           [김용욱](https://github.com/benelus94)                                            |                                           [최상호](https://github.com/chointer)                                            |                                            [이의석](https://github.com/Ui-Seok)                                            |                                         [이재준](https://github.com/wowns1484)
+| :--------------------------------------------------------------------------: | :--------------------------------------------------------------------------: | :--------------------------------------------------------------------------: | :--------------------------------------------------------------------------: |
+|                   [김용욱](https://github.com/benelus94)                   |                   [최상호](https://github.com/chointer)                   |                    [이의석](https://github.com/Ui-Seok)                    |                   [이재준](https://github.com/wowns1484)                   |
 
 ## About project
-- 기획 배경: 배경~~~
-- 기대 효과: 우리는 이렇게~~~
+
+- 기획 배경
+
+  많은 사람들이 온라인 쇼핑몰을 통해 옷을 구매하는데 상품 상세 보기를 누르면 모델 없이
+  옷에 대한 소개만 있는 쇼핑몰 페이지가 존재하였습니다.
+  저희는 여기에 불편함을 느껴 이를 해소하고자 사용자가 원하는 옷을 가상의 모델 혹은 사용자의 모델에 착용한 모습을 볼 수 있도록 하는 프로젝트를 기획하게 되었습니다.
+- 기대 효과
+
+  소비자의 구매 만족도 상승 및 반품량 감소
+
+  판매자의 피팅 사진 제작 비용 감소
 
 ## Model architecture
-그림!
+
+![model architecture](https://user-images.githubusercontent.com/82555245/217208254-bbee6e34-896b-4e91-811d-38f3365f0f7e.png)
+> [DAFlow paper](https://arxiv.org/abs/2207.09161)
 
 ## Dataset
+
 - [Dress Code dataset](https://github.com/aimagelab/dress-code)
 
 ## Equipments
+
 - CPU: Intel(R) Xeon(R) Gold 5120 CPU @ 2.20GHz
 - GPU: V100 32GB
 - OS: Ubuntu 18.04 LTS
 
 ## Folder structure
+
 ```
 ├── DAFlow/
 │   ├── models/
@@ -61,7 +77,6 @@
 └── README.md
 ```
 
-
 ## How to run server
 
 1. `poetry shell`
@@ -72,16 +87,14 @@
 6. `make run_build`
 7. `make -j 3 run_app`
 
-
 ## If your model saved in bentoml.models and modifying service content
 
 1. `make run_build`
-2. `make -j 2 run_app`
+2. `make -j 3 run_app`
 
 ## Reference
 
 - The Dress Code Dataset is proprietary to and © Yoox Net-a-Porter Group S.p.A., and its licensors. It is distributed by the University of Modena and Reggio Emilia, and available for non-commercial academic use under licence terms set out at https://github.com/aimagelab/dress-code.
-
 - [openpose](https://github.com/Hzzone/pytorch-openpose)
 - [human_parser](https://github.com/GoGoDuck912/Self-Correction-Human-Parsing)
 - [carvekit](https://github.com/OPHoperHPO/image-background-remove-tool)
