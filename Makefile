@@ -25,6 +25,11 @@ run_apt_install:
 	apt-get install -y g++
 	apt-get -y install libgl1-mesa-glx
 
+run_apt_install_ci:
+	sudo apt-get install -y gcc-8
+	sudo apt-get install -y g++
+	sudo apt-get -y install libgl1-mesa-glx
+
 run_build:
 	bentoml build -f service/back-end/app/bentofile.yaml service/back-end/app
 
