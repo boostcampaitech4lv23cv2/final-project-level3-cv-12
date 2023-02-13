@@ -2,27 +2,24 @@ import requests
 from PIL import Image
 import io
 import time
-import os
-
 
 def run_server():
-    print(os.getcwd())
     time.sleep(5)
     print("warmup server start.")
 
-    cloth = Image.open("service/back-end/warmup_sample/cloth.jpg")
-    human = Image.open("service/back-end/warmup_sample/human.jpg")
+    cloth = Image.open("service/back-end/sample_images/warmup_sample/cloth.jpg").convert('RGB').resize((768, 1024))
+    human = Image.open("service/back-end/sample_images/warmup_sample/human.jpg").convert('RGB').resize((768, 1024))
 
     clothByteArr = io.BytesIO()
-    cloth.save(clothByteArr, format=cloth.format)
+    cloth.save(clothByteArr, format='JPEG')
     clothByteArr = clothByteArr.getvalue()
 
     humanByteArr = io.BytesIO()
-    human.save(humanByteArr, format=human.format)
+    human.save(humanByteArr, format='JPEG')
     humanByteArr = humanByteArr.getvalue()
 
     files = [
-        ("part", ("dresses")),
+        ("part", ("upper")),
         ("cloth", ("dummy", clothByteArr, "image/jpeg")),
         ("human", ("dummy", humanByteArr, "image/jpeg")),
     ]
@@ -33,6 +30,5 @@ def run_server():
         print("completed warmup.")
     else:
         print(f"{response.status_code} error occurred while warmup.")
-
 
 run_server()

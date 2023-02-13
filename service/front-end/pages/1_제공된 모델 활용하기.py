@@ -4,7 +4,6 @@ from pathlib import Path
 
 import requests
 from PIL import Image
-import numpy as np
 
 import streamlit as st
 
@@ -375,7 +374,6 @@ def main():
             if st.session_state[key]:
                 image_path.append(key)
 
-    # st.write(image_path)
     st.write("")
 
     # cloth file upload
@@ -394,7 +392,7 @@ def main():
     with col:
         if uploaded_only_cloth_file:
             cloth_image_bytes = uploaded_only_cloth_file.getvalue()
-            cloth_image = Image.open(io.BytesIO(cloth_image_bytes)).resize((384, 512))
+            cloth_image = Image.open(io.BytesIO(cloth_image_bytes)).convert('RGB').resize((768, 1024))
 
             cloth_image_byte_arr = io.BytesIO()
             cloth_image.save(cloth_image_byte_arr, format="PNG")
@@ -415,19 +413,19 @@ def main():
     with col1:
         if uploaded_only_cloth_file:
             st.image(cloth_image)
-        # else:
-        #    st.image(Image.open(os.path.join(dir_root, 'service/front-end/images/DALLE_illust_1.png')).resize((384, 512)))
-
+            
     with col2:
         if len(image_path) >= 3:
             try:
+                avatar_path = f"{image_path[1]}/{image_path[2].split('_')[1]}/{image_path[0]}.jpg"
                 avatar_image_path = os.path.join(
                     dir_root,
-                    f"service/back-end/sample_images/{image_path[1]}/{image_path[2].split('_')[1]}/{image_path[0]}.jpg",
+                    'service/front-end/images/sample_avatars/',
+                    avatar_path
                 )
                 avatar_image = Image.open(avatar_image_path)
                 st.image(avatar_image.resize((384, 512)))
-                files.append(("avatar_path", (avatar_image_path)))
+                files.append(("avatar_path", (avatar_path)))
             except IndexError:
                 pass
 
