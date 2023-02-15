@@ -8,11 +8,8 @@ from bentoml.io import Image, Multipart, Text
 import numpy as np
 from torchvision import transforms
 from modules.carvekit_custom.high import HiInterface
-import os
-import json
 import cv2
 
-from torchvision.utils import save_image
 from concurrent.futures import ThreadPoolExecutor
 
 cudnn.benchmark = True
@@ -33,8 +30,7 @@ fba_runner = fba_model.to_runner()
 parser_model = bentoml.models.get('human_parser:latest')
 parser_runner = parser_model.to_runner()
 
-svc = bentoml.Service('vton_daflow', runners=[vton_runner, openpose_runner, tracer_runner, fba_runner, parser_runner],
-                      models=[vton_model, openpose_model, tracer_model, fba_model, parser_model])
+svc = bentoml.Service('vton_daflow', runners=[vton_runner, openpose_runner, tracer_runner, fba_runner, parser_runner])
 
 interface = HiInterface(object_type="object",  # Can be "object" or "hairs-like".
                             batch_size_seg=1,
@@ -65,17 +61,10 @@ async def predict_from_cloth(cloth, avatar_path):
 
     tryon_result = vton_runner.run(ref_input, cloth_img, img_agnostic).detach()
 
-    imgs = ((tryon_result.squeeze().permute(1, 2, 0).cpu().numpy()*0.5+0.5)*255).astype(np.uint8)
-    transf = transforms.ToPILImage()
-    imgs = transf(imgs)
+    tryon_result = ((tryon_result.squeeze().permute(1, 2, 0).cpu().numpy()*0.5+0.5)*255).astype(np.uint8)
+    tryon_result = transforms.ToPILImage()(tryon_result)
 
-    return imgs
-
-save_dir = '/opt/ml/input/final-project-level3-cv-12/service/back-end/app/result_sample'
-os.makedirs(save_dir, exist_ok=True)
-
-from multiprocessing import Pool
-import time
+    return tryon_result
 
 @svc.api(input=Multipart(part=Text(), cloth=Image(), human=Image()), output=Image(), route='/all-tryon')
 def predict_from_cloth_human(part, cloth, human):
@@ -91,25 +80,15 @@ def predict_from_cloth_human(part, cloth, human):
     parser_map = parser_map.result()
     
     cloth_img = _transform_image(cloth).to(device)
-    cloth_img_result = ((cloth_img.squeeze().permute(1, 2, 0).cpu().numpy()*0.5+0.5)*255).astype(np.uint8)
-    pImage.fromarray(cloth_img_result).save(f'{save_dir}/cloth.png', 'png')
 
-    parser_map.save(f'{save_dir}/parser_map.png', 'png')
-
-    with open(f'{save_dir}/keypoints.json', 'w') as f:
-        json.dump(keypoint, f)
-    
     img_agnostic = preprocess.get_human_agnostic(human, parser_map, keypoint, part)
     img_agnostic = (img_agnostic.permute(1, 2, 0).numpy()*255).astype(np.uint8)
-    
-    pImage.fromarray(img_agnostic).save(f'{save_dir}/agnostic.png', 'png')
     img_agnostic = preprocess.transform_image(pImage.fromarray(img_agnostic))
     img_agnostic = img_agnostic.to(device) # Masked model image
     img_agnostic = img_agnostic.unsqueeze(0)
     
     skeleton = skeleton.astype(np.uint8)
     skeleton = cv2.cvtColor(skeleton, cv2.COLOR_BGR2RGB)
-    pImage.fromarray(skeleton).save(f'{save_dir}/skeleton.png', 'png')
     skeleton = preprocess.transform_image(pImage.fromarray(skeleton))
     skeleton = skeleton.to(device)
     skeleton = skeleton.unsqueeze(0)
@@ -118,10 +97,7 @@ def predict_from_cloth_human(part, cloth, human):
         
     tryon_result = vton_runner.run(ref_input, cloth_img, img_agnostic).detach()
 
-    imgs = ((tryon_result.squeeze().permute(1, 2, 0).cpu().numpy()*0.5+0.5)*255).astype(np.uint8)
-    transf = transforms.ToPILImage()
-    imgs = transf(imgs)
-    
-    imgs.save(f'{save_dir}/result.png', 'png')
-    
-    return imgs
+    tryon_result = ((tryon_result.squeeze().permute(1, 2, 0).cpu().numpy()*0.5+0.5)*255).astype(np.uint8)
+    tryon_result = transforms.ToPILImage()(tryon_result)
+        
+    return tryon_result

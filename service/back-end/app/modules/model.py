@@ -524,8 +524,9 @@ def _transform_image(image):
 
     return transform(image=image)["image"].unsqueeze(0)
 
-
-def get_avatar(avatar_path: str = "./assets/daflow"):
+import os
+def get_avatar(avatar_path: str):
+    avatar_path = f'/opt/ml/input/final-project-level3-cv-12/service/back-end/sample_images/{avatar_path}'
     avatar_name = avatar_path.split("/")[-1].replace(".jpg", "")
     avatar_path = osp.dirname(avatar_path)
 

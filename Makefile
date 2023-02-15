@@ -1,11 +1,14 @@
 run_checkpoints_download:
-	mkdir service/back-end/checkpoints/daflow
-	mkdir service/back-end/checkpoints/human_parser
-	mkdir service/back-end/checkpoints/openpose
+	mkdir ./service/back-end/checkpoints
+	mkdir ./service/back-end/checkpoints/daflow
+	mkdir ./service/back-end/checkpoints/human_parser
+	mkdir ./service/back-end/checkpoints/openpose
+
 	wget https://www.dropbox.com/s/6kogpt90zgw7wxp/100_mod_all_256.pt -P ./service/back-end/checkpoints/daflow/
 	wget https://www.dropbox.com/s/kg9e0m6sr2j3fp0/003_allbody_512_upscale_low_lr.pt -P ./service/back-end/checkpoints/daflow
-	wget https://www.dropbox.com/sh/7xbup2qsn7vvjxo/AABWFksdlgOMXR_r5v3RwKRYa?dl=0 -P ./service/back-end/checkpoints/openpose -O Openpose.zip
-	unzip ./service/back-end/checkpoints/openpose/Openpose.zip -x ./service/back-end/checkpoints/openpose/
+	wget https://www.dropbox.com/sh/7xbup2qsn7vvjxo/AABWFksdlgOMXR_r5v3RwKRYa?dl=0 -O ./service/back-end/checkpoints/openpose/Openpose.zip
+	unzip ./service/back-end/checkpoints/openpose/Openpose.zip -x / -d ./service/back-end/checkpoints/openpose/
+	rm ./service/back-end/checkpoints/openpose/Openpose.zip
 	wget https://www.dropbox.com/s/w6rgpnjyp11j6fr/exp-schp-201908301523-atr.pth -P ./service/back-end/checkpoints/human_parser
 
 run_server:
@@ -15,7 +18,7 @@ run_client:
 	python3 -m streamlit run service/front-end/homepage.py --server.port 30003 --server.fileWatcherType none
 
 run_server_warmup:
-	python service/back-end/app/warmup_server.py
+	python service/back-end/warmup_server.py
 
 run_save_model:
 	python service/back-end/app/save_model.py

@@ -17,7 +17,7 @@ from collections import OrderedDict
 def get_config():
     dir_root = os.getcwd()
     parser = argparse.ArgumentParser()
-    parser.add_argument('-d', '--daflow-path', default=os.path.join(dir_root, 'service/back-end/checkpoints/daflow/100_mod_all_256.pt'), help='saved daflow model path') # 025_model_lower_512_2_lr00003
+    parser.add_argument('-d', '--daflow-path', default=os.path.join(dir_root, 'service/back-end/checkpoints/daflow/003_allbody_512_upscale_low_lr.pt'), help='saved daflow model path') # 025_model_lower_512_2_lr00003
     parser.add_argument('--openpose-path', default=os.path.join(dir_root, 'service/back-end/checkpoints/openpose/body_pose_model.pth'), help='saved openpose model path')
     parser.add_argument('--parser-path', default=os.path.join(dir_root, 'service/back-end/checkpoints/human_parser/exp-schp-201908301523-atr.pth'), help='saved human parser model path')
     parser.add_argument('--device', default='cuda' if torch.cuda.is_available() else 'cpu', help='check device')
