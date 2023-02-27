@@ -8,6 +8,8 @@ from PIL import Image
 from os import path as osp
 from modules.openpose.model import bodypose_model
 
+import numpy as np
+
 
 def apply_offset(offset):
     sizes = list(offset.size()[2:])
@@ -514,6 +516,10 @@ def get_model(
 
 
 def _transform_image(image):
+    # h, w, _ = np.array(image.shape)
+    # print(h, w)
+    # if w >= h:
+    #     image = albumentations.CentorCrop(h, h-2)
     transform = albumentations.Compose(
         [
             albumentations.Resize(height=512, width=384),

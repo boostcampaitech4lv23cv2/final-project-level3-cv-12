@@ -66,7 +66,7 @@ def main():
     _, col, _ = st.columns([1.3, 3.2, 1])
     with col:
         st.title("의류 가상 피팅 서비스")
-    _, col, _ = st.columns([1, 1.3, 1])
+    _, col, _ = st.columns([1.2, 1.3, 1])
     with col:
         st.write("### 제공된 모델 활용하기")
     for _ in range(3):
@@ -394,7 +394,11 @@ def main():
     with col:
         if uploaded_only_cloth_file:
             cloth_image_bytes = uploaded_only_cloth_file.getvalue()
-            cloth_image = Image.open(io.BytesIO(cloth_image_bytes)).resize((384, 512))
+            cloth_image = (
+                Image.open(io.BytesIO(cloth_image_bytes))
+                .convert("RGB")
+                .resize((384, 512))
+            )
 
             cloth_image_byte_arr = io.BytesIO()
             cloth_image.save(cloth_image_byte_arr, format="PNG")

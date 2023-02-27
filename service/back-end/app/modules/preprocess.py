@@ -4,6 +4,7 @@ import numpy as np
 from modules.human_parser.simple_extractor import get_parser_map
 from modules.agnostic.get_agnostic import get_agnostic
 from torchvision import transforms
+from PIL import Image
 
 
 def cloth_removed_background(interface, image):
@@ -44,8 +45,18 @@ def get_human_agnostic(human, human_parse, keypoint, part):
 
 
 def transform_image(image):
-    image = transforms.Resize((512, 384), interpolation=2)(image)
+    image = transforms.Resize(384, interpolation=2)(image)
     image = transforms.ToTensor()(image)
     image = transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))(image)
+
+    return image
+
+
+def pre_resize(image):
+    h, w, _ = image.shape
+    image = Image.fromarray(image)
+    if w >= h:
+        image = transforms.CenterCrop((h, h - 2))(image)
+    image = transforms.Resize(768, interpolation=2)(image)
 
     return image

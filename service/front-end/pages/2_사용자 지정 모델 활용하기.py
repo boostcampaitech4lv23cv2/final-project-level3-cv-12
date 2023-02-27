@@ -44,10 +44,10 @@ def main():
     guide_line_path = os.path.join(dir_root, "service/front-end/images/guide_line.png")
     guide_image = Image.open(guide_line_path).convert("RGB").resize((768, 1024))
 
-    _, col, _ = st.columns([1, 3.2, 1])
+    _, col, _ = st.columns([1.3, 3.2, 1])
     with col:
         st.title("의류 가상 피팅 서비스")
-    _, col, _ = st.columns([1, 1.8, 1])
+    _, col, _ = st.columns([1.2, 1.8, 1])
     with col:
         st.write("### 사용자 지정 모델 활용하기")
     for _ in range(3):
@@ -112,7 +112,7 @@ def main():
 
         if uploaded_cloth_file:
             cloth_image_bytes = uploaded_cloth_file.getvalue()
-            cloth_image = Image.open(io.BytesIO(cloth_image_bytes)).resize((768, 1024))
+            cloth_image = Image.open(io.BytesIO(cloth_image_bytes))
 
             cloth_image_byte_arr = io.BytesIO()
             cloth_image.save(cloth_image_byte_arr, format="PNG")
@@ -144,9 +144,11 @@ def main():
 
         if uploaded_human_file:
             human_image_bytes = uploaded_human_file.getvalue()
-            human_image = Image.open(io.BytesIO(human_image_bytes)).resize((768, 1024))
+            human_image = Image.open(io.BytesIO(human_image_bytes)).convert("RGB")
 
-            combine_image = Image.blend(human_image, guide_image, 0.4)
+            combine_image = Image.blend(
+                human_image.resize((768, 1024)), guide_image, 0.4
+            )
 
             human_image_byte_arr = io.BytesIO()
             human_image.save(human_image_byte_arr, format="PNG")

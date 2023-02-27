@@ -14,15 +14,18 @@ ASSETS_DIR_PATH = os.path.join(Path(__file__).parent.parent.parent.parent, "asse
 st.set_page_config(
     page_title="Virtual Try-On",
     # layout="wide",
-    # page_icon=":bird:",
+    page_icon=":cloth:",
     # initial_sidebar_state="expanded"
 )
+
 
 def main():
     dir_root = os.getcwd()
     st.write()
-    st.image(Image.open(os.path.join(dir_root, 'service/front-end/images/main_illust.png')))
-    
+    st.image(
+        Image.open(os.path.join(dir_root, "service/front-end/images/main_illust.png"))
+    )
+
     for _ in range(5):
         st.write("")
     _, col, _ = st.columns([1, 6, 1])
@@ -34,7 +37,7 @@ def main():
     for _ in range(7):
         st.write("")
 
-    col1, col2 = st.columns([1.5,2])
+    col1, col2 = st.columns([1.5, 2])
     with col1:
         for _ in range(5):
             st.write("")
@@ -46,16 +49,18 @@ def main():
         for _ in range(3):
             st.write("")
     with col2:
-        st.image(Image.open(os.path.join(dir_root, 'service/front-end/images/intro_1.png')))
+        st.image(
+            Image.open(os.path.join(dir_root, "service/front-end/images/intro_1.png"))
+        )
 
-        
     for _ in range(5):
         st.write("")
 
-        
-    col1, col2 = st.columns([2,1.5])
+    col1, col2 = st.columns([2, 1.5])
     with col1:
-        st.image(Image.open(os.path.join(dir_root, 'service/front-end/images/intro_2.png')))
+        st.image(
+            Image.open(os.path.join(dir_root, "service/front-end/images/intro_2.png"))
+        )
     with col2:
         for _ in range(5):
             st.write("")
@@ -66,35 +71,19 @@ def main():
         st.write("만들 수 있습니다.")
         for _ in range(3):
             st.write("")
-            
 
     for _ in range(8):
         st.write("")
 
-    
-    st.write("### 👕 사용자 지정 모델 활용하기")
-    st.write("##### :blue[원하는 모델 사진을 업로드해서 옷을 입힙니다.]")
-    _, col, _ = st.columns([1, 5, 1])
-    with col:
-        st.image(Image.open(os.path.join(dir_root, 'service/front-end/images/manual_custom.png')))
-    st.write(
-        """
-        ① 입을 옷 유형을 선택합니다. \n
-        ② 옷 사진을 업로드합니다. \n
-        ③ 모델 사진을 업로드합니다. \n
-        ④ "입어보기" 버튼을 클릭하면 잠시 후 결과가 나타납니다. \n
-        ⑤ "저장하기" 버튼으로 사진을 다운로드 받을 수 있습니다. \n
-        """
-    )
-
-    for _ in range(5):
-        st.write("")
-    
     st.write("### 제공된 모델 활용하기")
     st.write("##### :blue[제공된 모델 사진에 옷을 입힙니다.]")
     _, col, _ = st.columns([1, 5, 1])
     with col:
-        st.image(Image.open(os.path.join(dir_root, 'service/front-end/images/manual_provided.png')))
+        st.image(
+            Image.open(
+                os.path.join(dir_root, "service/front-end/images/manual_provided.png")
+            )
+        )
     st.write(
         """
         ① 입을 옷 유형을 선택합니다. \n
@@ -108,5 +97,28 @@ def main():
     for _ in range(5):
         st.write("")
 
-if __name__ == '__main__':
+    st.write("### 👕 사용자 지정 모델 활용하기")
+    st.write("##### :blue[원하는 모델 사진을 업로드해서 옷을 입힙니다.]")
+    _, col, _ = st.columns([1, 5, 1])
+    with col:
+        st.image(
+            Image.open(
+                os.path.join(dir_root, "service/front-end/images/manual_custom.png")
+            )
+        )
+    st.write(
+        """
+        ① 입을 옷 유형을 선택합니다. \n
+        ② 옷 사진을 업로드합니다. \n
+        ③ 모델 사진을 업로드합니다. \n
+        ④ "입어보기" 버튼을 클릭하면 잠시 후 결과가 나타납니다. \n
+        ⑤ "저장하기" 버튼으로 사진을 다운로드 받을 수 있습니다. \n
+        """
+    )
+
+    for _ in range(5):
+        st.write("")
+
+
+if __name__ == "__main__":
     main()
