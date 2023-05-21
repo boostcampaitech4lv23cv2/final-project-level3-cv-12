@@ -25,6 +25,7 @@ sh get_mask.sh
 ```
 <br/>
 <br/>
+
 ### 3. `get_mask.sh` process
 1) 사용할 폴더 만들기
     `temp_image_cloth`: 옷 image를 옮겨두는 폴더
